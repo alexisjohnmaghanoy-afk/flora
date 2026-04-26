@@ -1063,24 +1063,20 @@ function md2html(text) {
   // Horizontal rule
   t = t.replace(/^---+$/gm, '<hr>');
 
-  // Unordered lists
+  // Unordered lists — group consecutive <li> lines
   t = t.replace(/^[\*\-•] (.+)$/gm, '<li>$1</li>');
-  t = t.replace(/(<li>.*<\/li>\n?)+/gs, match => `<ul>${match}</ul>`);
+  t = t.replace(/(<li>[^\n]*<\/li>\n?)+/g, match => `<ul>${match}</ul>`);
 
   // Ordered lists
-  t = t.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-  // wrap orphan li blocks that aren't already in ul
-  t = t.replace(/(?<!<\/ul>)(<li>(?:(?!<ul>).)*<\/li>\n?)+/gs, match => {
-    if (match.includes('<ul>')) return match;
-    return `<ol>${match}</ol>`;
-  });
+  t = t.replace(/^\d+\. (.+)$/gm, '<oli>$1</oli>');
+  t = t.replace(/(<oli>[^\n]*<\/oli>\n?)+/g, match => `<ol>${match.replace(/<\/?oli>/g, m => m.replace('oli','li'))}</ol>`);
 
   // Emoji section headers (lines starting with emoji + text, no #)
   t = t.replace(/^([\u{1F300}-\u{1FAFF}\u{2600}-\u{27FF}][\uFE0F]?\s.+)$/gmu, '<div class="ai-section">$1</div>');
 
   // Paragraphs — wrap lines not already in block elements
   const lines = t.split('\n');
-  const blocked = new Set(['<h3>','<h4>','<ul>','</ul>','<ol>','</ol>','<li>','</li>','<hr>','<div','</div']);
+  const blocked = ['<h3>','<h4>','<ul>','</ul>','<ol>','</ol>','<li>','</li>','<hr>','<div','</div'];
   const out = [];
   let buf = '';
   lines.forEach(line => {
@@ -1140,11 +1136,27 @@ async function sendAI(){
         seed:Math.floor(Math.random()*9999)
       })
     });
-    if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw=await res.text();
-    box.innerHTML='<div class="ai-bubble-tag">🌸 Flora AI</div>'+md2html(raw);
+    if(!res.ok) throw new Error(`Server returned ${res.status}`);
+    // Pollinations may return plain text or JSON — handle both
+    const raw = await res.text();
+    let reply = raw.trim();
+    // Strip BOM if present
+    if (reply.charCodeAt(0) === 0xFEFF) reply = reply.slice(1);
+    // Try to parse as JSON (OpenAI format)
+    try {
+      const json = JSON.parse(reply);
+      if (json.choices && json.choices[0]) {
+        reply = json.choices[0].message?.content || json.choices[0].text || reply;
+      } else if (json.content) {
+        reply = Array.isArray(json.content)
+          ? json.content.filter(b=>b.type==='text').map(b=>b.text).join('\n')
+          : json.content;
+      }
+    } catch(_) { /* plain text — use as-is */ }
+    if (!reply) throw new Error('Empty response from AI');
+    box.innerHTML='<div class="ai-bubble-tag">🌸 Flora AI</div>'+md2html(reply);
   } catch(e) {
-    box.innerHTML=`<div class="ai-bubble-tag">🌸 Flora AI</div><p style="color:var(--pink)">⚠️ Couldn't reach Flora AI right now. Please check your internet connection and try again.</p><p style="color:var(--text-soft);font-size:.78rem">Error: ${e.message}</p>`;
+    box.innerHTML=`<div class="ai-bubble-tag">🌸 Flora AI</div><p style="color:var(--pink)">⚠️ Couldn't reach Flora AI right now. Please check your internet connection and try again.</p><p style="color:var(--text-soft);font-size:.78rem">Details: ${e.message}</p>`;
   } finally {
     btn.disabled=false; btn.textContent='Send 💌';
   }
