@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Flora — Cycle Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink:       #F4628F;
+  --pink-light: #F99AB9;
+  --pink-pale:  #FDE8EF;
+  --pink-soft:  #FCF0F4;
+  --lilac:      #C27BE0;
+  --lilac-pale: #EFE0F9;
+  --peach:      #F5A673;
+  --peach-pale: #FEF0E7;
+  --mint:       #6BBFA3;
+  --mint-pale:  #DFF4EE;
+  --gold:       #F0BC5E;
+  --gold-pale:  #FEF5DC;
+  --bg:         #FDF7F9;
+  --white:      #FFFFFF;
+  --text:       #2D1B2E;
+  --text-mid:   #7A4F62;
+  --text-soft:  #B08898;
+  --card-shadow: 0 8px 32px rgba(244,98,143,.13);
+  --nav-h: 72px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ── Scrollable content area ── */
+.screen-wrap {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding-bottom: calc(var(--nav-h) + 16px);
+}
+.screen-wrap::-webkit-scrollbar { width: 3px; }
+.screen-wrap::-webkit-scrollbar-thumb { background: var(--pink-light); border-radius: 4px; }
+
+/* ── Screen panels ── */
+.screen { display: none; padding: 0 16px; animation: fadeSlide .3s ease; }
+.screen.active { display: block; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── App Header ── */
+.app-header {
+  background: linear-gradient(135deg, #F4628F 0%, #C27BE0 100%);
+  padding: 52px 22px 28px;
+  position: relative; overflow: hidden;
+  margin-bottom: 0;
+}
+.app-header::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: rgba(255,255,255,.1);
+}
+.app-header::after {
+  content: '';
+  position: absolute; bottom: -30px; left: 20px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(255,255,255,.07);
+}
+.header-top { display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1; }
+.app-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.9rem; font-weight: 700; color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,.15);
+  letter-spacing: .01em;
+}
+.app-logo .flower { font-size: 1.6rem; margin-right: 4px; }
+.header-badge {
+  background: rgba(255,255,255,.22); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 20px; padding: 5px 12px;
+  font-size: .68rem; color: #fff; font-weight: 600;
+  letter-spacing: .04em;
+}
+.header-subtitle { color: rgba(255,255,255,.82); font-size: .82rem; margin-top: 6px; font-weight: 500; position:relative; z-index:1; }
+
+/* ── Bottom nav ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px;
+  height: var(--nav-h);
+  background: rgba(255,255,255,.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(244,98,143,.12);
+  display: flex; align-items: flex-start; padding-top: 8px;
+  box-shadow: 0 -8px 32px rgba(244,98,143,.1);
+  z-index: 100;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: none; border: none; cursor: pointer; padding: 4px 0;
+  transition: all .2s ease;
+}
+.nav-btn .nav-icon { font-size: 1.4rem; transition: transform .2s; }
+.nav-btn .nav-label { font-size: .62rem; font-weight: 700; color: var(--text-soft); letter-spacing: .03em; font-family:'Nunito',sans-serif; }
+.nav-btn.active .nav-label { color: var(--pink); }
+.nav-btn.active .nav-icon { transform: scale(1.15); }
+.nav-btn.active { position: relative; }
+.nav-btn.active::before {
+  content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+  width: 36px; height: 3px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--pink), var(--lilac));
+}
+
+/* ── Section title ── */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem; font-weight: 700; color: var(--text);
+  margin: 22px 0 14px; display: flex; align-items: center; gap: 8px;
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--white); border-radius: 24px;
+  padding: 20px; margin-bottom: 14px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(244,98,143,.08);
+  position: relative; overflow: hidden;
+}
+.card-label {
+  font-size: .7rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--text-soft); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+
+/* ── Stat row ── */
+.stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.stat-pill {
+  background: var(--white); border-radius: 20px;
+  padding: 16px 10px 14px; text-align: center;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(244,98,143,.08);
+  transition: transform .2s; cursor: default;
+}
+.stat-pill:hover { transform: translateY(-2px); }
+.stat-pill-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; font-weight: 700; line-height: 1;
+  background: linear-gradient(135deg, var(--pink), var(--lilac));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-pill-lbl { font-size: .62rem; font-weight: 800; color: var(--text-soft); text-transform: uppercase; letter-spacing: .07em; margin-top: 4px; }
+.stat-pill-sub { font-size: .72rem; color: var(--text-mid); margin-top: 3px; font-weight: 500; }
+
+/* ── Phase strip ── */
+.phase-strip { display:flex; border-radius: 16px; overflow:hidden; height: 12px; margin: 8px 0 6px; }
+.ps { flex:1; }
+.ps-period     { background: linear-gradient(90deg,#F4628F,#F99AB9); }
+.ps-follicular { background: linear-gradient(90deg,#7EC8E3,#A8DCF0); }
+.ps-ovulation  { background: linear-gradient(90deg,#F0BC5E,#F5D08A); }
+.ps-luteal     { background: linear-gradient(90deg,#C27BE0,#D8A8F0); }
+.phase-dots { display:flex; gap:12px; flex-wrap:wrap; font-size:.7rem; color:var(--text-soft); margin-top:5px; }
+.pdot { width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:3px; }
+
+/* ── Current phase badge ── */
+.phase-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding: 8px 16px; border-radius: 30px; font-size:.82rem; font-weight:700;
+  margin-bottom: 12px;
+}
+.phase-period     { background:var(--pink-pale);  color:var(--pink);  }
+.phase-follicular { background:#EAF6FC;            color:#2A8AA0;      }
+.phase-ovulation  { background:var(--gold-pale);  color:#B07B10;      }
+.phase-fertile    { background:var(--mint-pale);  color:#2A8060;      }
+.phase-luteal     { background:var(--lilac-pale); color:#8040B0;      }
+
+/* ── Prediction cards ── */
+.pred-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.pred-card {
+  border-radius: 18px; padding: 16px 14px;
+  display:flex; flex-direction:column; gap:4px;
+  position:relative; overflow:hidden;
+}
+.pred-card::before {
+  content:''; position:absolute; top:-15px; right:-15px;
+  width:60px;height:60px;border-radius:50%;
+  background:rgba(255,255,255,.3);
+}
+.pred-card-1 { background:linear-gradient(135deg,#FBDCE7,#F4A8BE); }
+.pred-card-2 { background:linear-gradient(135deg,#EFE0F9,#D8B4F0); }
+.pred-card-3 { background:linear-gradient(135deg,#DFF4EE,#A8DFD0); }
+.pred-card-4 { background:linear-gradient(135deg,#FEF5DC,#F5D9A0); }
+.pred-lbl { font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; opacity:.7; color:var(--text); }
+.pred-val { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:var(--text); }
+.pred-sub { font-size:.7rem; color:var(--text-mid); font-weight:600; }
+
+/* ── Cycle donut ── */
+.donut-wrap { display:flex; justify-content:center; padding:10px 0 0; }
+
+/* ── Log form ── */
+.form-group { margin-bottom:16px; }
+.form-lbl { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-soft); margin-bottom:6px; display:block; }
+.form-input {
+  width:100%; padding:12px 16px; border-radius:14px;
+  border:2px solid var(--pink-pale);
+  font-family:'Nunito',sans-serif; font-size:.9rem; color:var(--text);
+  background:var(--pink-soft); outline:none; transition:border-color .2s;
+  -webkit-appearance:none;
+}
+.form-input:focus { border-color:var(--pink); }
+textarea.form-input { resize:vertical; min-height:80px; }
+
+.chip-row { display:flex; flex-wrap:wrap; gap:7px; }
+.chip {
+  padding:7px 14px; border-radius:20px; font-size:.78rem; font-weight:600;
+  border:2px solid var(--pink-pale); background:var(--white);
+  cursor:pointer; transition:all .18s; color:var(--text-mid); user-select:none;
+  font-family:'Nunito',sans-serif;
+}
+.chip.on { background:var(--pink); border-color:var(--pink); color:#fff; box-shadow:0 3px 10px rgba(244,98,143,.3); }
+
+.flow-row { display:flex; gap:8px; }
+.flow-btn {
+  flex:1; padding:10px 0; border-radius:12px; border:2px solid var(--pink-pale);
+  font-family:'Nunito',sans-serif; font-size:.75rem; font-weight:700; cursor:pointer;
+  background:var(--white); color:var(--text-mid); transition:all .18s; text-align:center;
+}
+.flow-btn.on { border-color:var(--pink); background:var(--pink-pale); color:var(--pink); }
+
+.mood-row { display:flex; gap:8px; }
+.mood-btn {
+  flex:1; padding:10px 0; border-radius:12px; border:2px solid var(--pink-pale);
+  font-size:1.3rem; cursor:pointer; background:var(--white); transition:all .18s;
+  text-align:center;
+}
+.mood-btn.on { border-color:var(--pink); transform:scale(1.12); box-shadow:0 4px 12px rgba(244,98,143,.25); }
+
+/* ── Buttons ── */
+.btn {
+  width:100%; padding:15px; border-radius:16px; border:none;
+  font-family:'Nunito',sans-serif; font-size:.95rem; font-weight:800;
+  cursor:pointer; transition:all .22s; letter-spacing:.02em;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-pink {
+  background:linear-gradient(135deg,#F4628F,#C27BE0);
+  color:#fff; box-shadow:0 8px 24px rgba(244,98,143,.38);
+}
+.btn-pink:hover { transform:translateY(-2px); box-shadow:0 12px 30px rgba(244,98,143,.45); }
+.btn-pink:disabled { background:linear-gradient(135deg,#ddd,#ccc); box-shadow:none; cursor:not-allowed; transform:none; }
+.btn-ghost {
+  background:var(--pink-pale); color:var(--pink); margin-top:8px;
+}
+.btn-ghost:hover { background:var(--pink); color:#fff; }
+
+/* ── Calendar ── */
+.cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.cal-month-name { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:var(--text); }
+.cal-arrows { display:flex; gap:8px; }
+.cal-arrow {
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid var(--pink-pale); background:var(--white);
+  color:var(--pink); cursor:pointer; font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s; font-family:sans-serif;
+}
+.cal-arrow:hover { background:var(--pink); color:#fff; border-color:var(--pink); }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.cal-dn { text-align:center; font-size:.62rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--text-soft); padding:4px 0 8px; }
+.cal-d {
+  aspect-ratio:1; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:.78rem; font-weight:600; cursor:pointer; transition:all .18s;
+  border:2px solid transparent; position:relative;
+}
+.cal-d:hover:not(.emp) { border-color:var(--pink); }
+.cal-d.emp { cursor:default; }
+.cal-d.td { font-weight:900; border-color:var(--pink) !important; }
+.cal-d.period     { background:rgba(244,98,143,.2); color:var(--pink); font-weight:800; }
+.cal-d.ovulation  { background:rgba(240,188,94,.22); color:#9A6A10; font-weight:800; }
+.cal-d.fertile    { background:rgba(107,191,163,.2); color:#2A806A; }
+.cal-d.luteal     { background:rgba(194,123,224,.15); color:#7A30B0; }
+.cal-d.follicular { background:rgba(126,200,227,.18); color:#1A7A9A; }
+.cal-d.logged::after {
+  content:''; position:absolute; bottom:2px;
+  width:5px;height:5px;border-radius:50%;background:var(--pink);
+}
+.cal-legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+.cal-leg { display:flex; align-items:center; gap:4px; font-size:.68rem; color:var(--text-soft); font-weight:600; }
+.cal-leg-dot { width:9px;height:9px;border-radius:50%; }
+
+/* ── AI Panel ── */
+.ai-header {
+  background: linear-gradient(135deg,#F4628F,#C27BE0);
+  border-radius: 24px; padding:22px; margin-bottom:14px;
+  position:relative; overflow:hidden;
+}
+.ai-header::before {
+  content:'🌸'; position:absolute; right:16px; bottom:-8px;
+  font-size:4rem; opacity:.25;
+}
+.ai-header-title { font-family:'Playfair Display',serif; font-size:1.3rem; color:#fff; font-weight:700; }
+.ai-header-sub { font-size:.78rem; color:rgba(255,255,255,.8); margin-top:4px; font-weight:500; }
+
+.quick-row { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px; }
+.qbtn {
+  padding:8px 13px; border-radius:20px; border:2px solid var(--pink-pale);
+  background:var(--white); color:var(--text-mid); font-size:.75rem; font-weight:700;
+  cursor:pointer; transition:all .18s; font-family:'Nunito',sans-serif;
+}
+.qbtn:hover { background:var(--pink); border-color:var(--pink); color:#fff; }
+
+.ai-input-row { display:flex; gap:8px; margin-bottom:12px; }
+.ai-inp {
+  flex:1; padding:12px 16px; border-radius:30px;
+  border:2px solid var(--pink-pale); background:var(--pink-soft);
+  font-family:'Nunito',sans-serif; font-size:.88rem; color:var(--text);
+  outline:none; transition:border-color .2s;
+}
+.ai-inp:focus { border-color:var(--pink); }
+.ai-send {
+  padding:12px 18px; border-radius:30px; border:none;
+  background:linear-gradient(135deg,var(--pink),var(--lilac));
+  color:#fff; font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:800;
+  cursor:pointer; transition:all .2s; white-space:nowrap;
+  box-shadow:0 4px 14px rgba(244,98,143,.3);
+}
+.ai-send:disabled { background:linear-gradient(135deg,#ddd,#ccc); box-shadow:none; cursor:not-allowed; }
+.ai-send:not(:disabled):hover { transform:scale(1.04); }
+
+.ai-bubble {
+  background:var(--white); border-radius:20px;
+  padding:20px; min-height:120px;
+  box-shadow:var(--card-shadow);
+  border:1px solid rgba(244,98,143,.1);
+  font-size:.88rem; line-height:1.75; color:var(--text);
+  position:relative;
+}
+.ai-bubble-tag {
+  display:inline-flex; align-items:center; gap:5px;
+  background:linear-gradient(135deg,var(--pink-pale),var(--lilac-pale));
+  color:var(--pink); font-size:.65rem; font-weight:800; letter-spacing:.06em;
+  padding:4px 10px; border-radius:10px; margin-bottom:12px;
+}
+/* Formatted AI response */
+.ai-bubble h3 { font-family:'Playfair Display',serif; font-size:1rem; color:var(--text); margin:14px 0 6px; font-weight:700; }
+.ai-bubble h4 { font-size:.88rem; font-weight:800; color:var(--pink); margin:12px 0 5px; }
+.ai-bubble p { margin-bottom:10px; }
+.ai-bubble ul { padding-left:18px; margin-bottom:10px; }
+.ai-bubble ul li { margin-bottom:5px; }
+.ai-bubble ol { padding-left:18px; margin-bottom:10px; }
+.ai-bubble ol li { margin-bottom:5px; }
+.ai-bubble strong { color:var(--text); font-weight:800; }
+.ai-bubble em { color:var(--text-mid); font-style:italic; }
+.ai-bubble hr { border:none; border-top:1px solid var(--pink-pale); margin:12px 0; }
+.ai-bubble .ai-section {
+  background:var(--pink-soft); border-left:3px solid var(--pink);
+  border-radius:0 10px 10px 0; padding:10px 14px; margin:10px 0;
+}
+
+.typing-dots { display:flex; gap:5px; align-items:center; padding:10px 0; }
+.typing-dots span {
+  width:8px;height:8px;border-radius:50%;background:var(--pink-light);
+  animation:boop .8s infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.15s;}
+.typing-dots span:nth-child(3){animation-delay:.3s;}
+@keyframes boop{0%,80%,100%{transform:scale(.6);opacity:.35;}40%{transform:scale(1.1);opacity:1;}}
+
+/* ── History ── */
+.hist-item {
+  background:var(--white); border-radius:18px; padding:14px 16px;
+  margin-bottom:10px; box-shadow:var(--card-shadow);
+  border:1px solid rgba(244,98,143,.07);
+  display:flex; gap:12px; align-items:flex-start;
+  animation:fadeSlide .25s ease;
+}
+.hist-date-col { min-width:72px; }
+.hist-date-main { font-family:'Playfair Display',serif; font-size:.85rem; font-weight:700; color:var(--pink); }
+.hist-date-end { font-size:.68rem; color:var(--text-soft); font-weight:600; margin-top:1px; }
+.hist-chips { display:flex; flex-wrap:wrap; gap:5px; flex:1; }
+.hist-chip { font-size:.68rem; padding:3px 9px; border-radius:9px; background:var(--pink-pale); color:var(--pink); font-weight:700; }
+.hist-del { background:none; border:none; color:var(--pink-light); cursor:pointer; font-size:1.1rem; padding:0 4px; transition:color .15s; }
+.hist-del:hover { color:var(--pink); }
+.hist-empty { text-align:center; padding:40px 20px; color:var(--text-soft); }
+.hist-empty .big { font-size:3rem; display:block; margin-bottom:10px; }
+.hist-empty p { font-size:.88rem; font-weight:600; }
+
+/* ── Settings ── */
+.set-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 0; border-bottom:1px solid var(--pink-pale);
+}
+.set-row:last-child { border:none; }
+.set-row-lbl { font-size:.88rem; font-weight:700; color:var(--text); }
+.set-row-sub { font-size:.72rem; color:var(--text-soft); margin-top:2px; }
+.toggle { position:relative; width:46px; height:26px; flex-shrink:0; }
+.toggle input { opacity:0; width:0; height:0; }
+.tslider {
+  position:absolute; inset:0; border-radius:13px; cursor:pointer;
+  background:var(--pink-pale); transition:.3s;
+}
+.tslider::before {
+  content:''; position:absolute; left:4px; bottom:4px;
+  width:18px;height:18px;border-radius:50%;background:#fff;transition:.3s;
+  box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.toggle input:checked+.tslider { background:linear-gradient(135deg,var(--pink),var(--lilac)); }
+.toggle input:checked+.tslider::before { transform:translateX(20px); }
+
+.num-input {
+  width:80px; padding:8px 12px; border-radius:10px;
+  border:2px solid var(--pink-pale); background:var(--pink-soft);
+  font-family:'Nunito',sans-serif; font-size:.88rem; color:var(--text);
+  text-align:center; outline:none;
+}
+.num-input:focus { border-color:var(--pink); }
+
+/* ── Toast ── */
+.toast {
+  position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(30px);
+  background:var(--text); color:#fff; padding:11px 22px; border-radius:30px;
+  font-size:.82rem; font-weight:700; z-index:9999;
+  transition:transform .3s, opacity .3s; opacity:0; pointer-events:none;
+  white-space:nowrap; box-shadow:0 6px 20px rgba(0,0,0,.2);
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+/* ── Floating petals decoration ── */
+.petal {
+  position:fixed; font-size:1.2rem; pointer-events:none; z-index:0;
+  animation:floatPetal linear infinite;
+  opacity:0;
+}
+@keyframes floatPetal {
+  0%   { transform:translateY(100vh) rotate(0deg);   opacity:0; }
+  10%  { opacity:.6; }
+  90%  { opacity:.3; }
+  100% { transform:translateY(-80px) rotate(360deg); opacity:0; }
+}
+
+/* ── Gradient divider ── */
+.divider {
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--pink-pale),transparent);
+  margin:8px 0 16px;
+}
+
+/* About card */
+.about-card {
+  background:linear-gradient(135deg,#FDE8EF,#EFE0F9);
+  border-radius:22px; padding:20px; margin-bottom:14px;
+  border:1px solid rgba(244,98,143,.15);
+}
+</style>
+</head>
+<body>
+
+<!-- Petals -->
+<span class="petal" style="left:8%;animation-duration:12s;animation-delay:0s">🌸</span>
+<span class="petal" style="left:25%;animation-duration:15s;animation-delay:3s">🌷</span>
+<span class="petal" style="left:55%;animation-duration:11s;animation-delay:1.5s">✿</span>
+<span class="petal" style="left:75%;animation-duration:14s;animation-delay:5s">🌺</span>
+<span class="petal" style="left:88%;animation-duration:10s;animation-delay:7s">🌸</span>
+
+<div class="screen-wrap" id="screenWrap">
+
+  <!-- ═══════════════ HOME ═══════════════ -->
+  <div class="screen active" id="s-home">
+    <div class="app-header">
+      <div class="header-top">
+        <div class="app-logo"><span class="flower">🌸</span>Flora</div>
+        <div class="header-badge">✦ Powered by Pollinations AI</div>
+      </div>
+      <div class="header-subtitle" id="header-greeting">Your personal cycle companion 💕</div>
+    </div>
+
+    <div style="padding:0 0">
+      <div class="stat-row" style="margin-top:16px">
+        <div class="stat-pill">
+          <div class="stat-pill-val" id="h-day">—</div>
+          <div class="stat-pill-lbl">Cycle Day</div>
+          <div class="stat-pill-sub" id="h-phase-short">—</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-val" id="h-next">—</div>
+          <div class="stat-pill-lbl">Days Left</div>
+          <div class="stat-pill-sub" id="h-next-sub">—</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-pill-val" id="h-avg">—</div>
+          <div class="stat-pill-lbl">Avg Cycle</div>
+          <div class="stat-pill-sub" id="h-dur-sub">— day period</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">🌀 Current Phase</div>
+        <div id="h-phase-badge" class="phase-badge phase-period">🌺 Log your period to start</div>
+        <div class="phase-strip">
+          <div class="ps ps-period"     style="flex:5"></div>
+          <div class="ps ps-follicular" style="flex:8"></div>
+          <div class="ps ps-ovulation"  style="flex:3"></div>
+          <div class="ps ps-luteal"     style="flex:12"></div>
+        </div>
+        <div class="phase-dots">
+          <span><span class="pdot" style="background:#F4628F"></span>Period</span>
+          <span><span class="pdot" style="background:#7EC8E3"></span>Follicular</span>
+          <span><span class="pdot" style="background:#F0BC5E"></span>Ovulation</span>
+          <span><span class="pdot" style="background:#C27BE0"></span>Luteal</span>
+        </div>
+      </div>
+
+      <div class="card-label" style="padding:0 2px;margin-bottom:10px">🔮 Predictions</div>
+      <div class="pred-row">
+        <div class="pred-card pred-card-1">
+          <div class="pred-lbl">Next Period</div>
+          <div class="pred-val" id="p-next">—</div>
+          <div class="pred-sub">Predicted start</div>
+        </div>
+        <div class="pred-card pred-card-2">
+          <div class="pred-lbl">Ovulation</div>
+          <div class="pred-val" id="p-ovu">—</div>
+          <div class="pred-sub">Peak fertility</div>
+        </div>
+        <div class="pred-card pred-card-3">
+          <div class="pred-lbl">Fertile Window</div>
+          <div class="pred-val" id="p-fert" style="font-size:.95rem">—</div>
+          <div class="pred-sub">Best days</div>
+        </div>
+        <div class="pred-card pred-card-4">
+          <div class="pred-lbl">Luteal Phase</div>
+          <div class="pred-val" id="p-luteal" style="font-size:.95rem">—</div>
+          <div class="pred-sub">Post-ovulation</div>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top:16px">🌕 Cycle Wheel</div>
+      <div class="card" style="padding:16px">
+        <div class="donut-wrap"><canvas id="donut" width="260" height="260"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ LOG ═══════════════ -->
+  <div class="screen" id="s-log">
+    <div style="height:20px"></div>
+    <div class="section-title">📝 Log Your Period</div>
+
+    <div class="card">
+      <div class="form-group">
+        <label class="form-lbl">Period Start Date *</label>
+        <input type="date" class="form-input" id="l-start">
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Period End Date</label>
+        <input type="date" class="form-input" id="l-end">
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Flow Intensity</label>
+        <div class="flow-row">
+          <div class="flow-btn" data-f="1" onclick="tFlow(this)">💧 Light</div>
+          <div class="flow-btn" data-f="2" onclick="tFlow(this)">🩸 Medium</div>
+          <div class="flow-btn" data-f="3" onclick="tFlow(this)">🩸🩸 Heavy</div>
+          <div class="flow-btn" data-f="4" onclick="tFlow(this)">⚡ Very Heavy</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">How are you feeling? 🌸</label>
+        <div class="mood-row">
+          <div class="mood-btn" data-m="😊" onclick="tMood(this)">😊</div>
+          <div class="mood-btn" data-m="😢" onclick="tMood(this)">😢</div>
+          <div class="mood-btn" data-m="😡" onclick="tMood(this)">😡</div>
+          <div class="mood-btn" data-m="😰" onclick="tMood(this)">😰</div>
+          <div class="mood-btn" data-m="😴" onclick="tMood(this)">😴</div>
+          <div class="mood-btn" data-m="🤩" onclick="tMood(this)">🤩</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Symptoms</label>
+        <div class="chip-row" id="symp-chips">
+          <div class="chip" onclick="this.classList.toggle('on')">Cramps</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Headache</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Bloating</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Fatigue</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Backache</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Nausea</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Breast Tenderness</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Spotting</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Mood Swings</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Acne</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Insomnia</div>
+          <div class="chip" onclick="this.classList.toggle('on')">Cravings</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-lbl">Notes (optional)</label>
+        <textarea class="form-input" id="l-notes" placeholder="Anything else you'd like to remember…"></textarea>
+      </div>
+      <button class="btn btn-pink" onclick="saveLog()">💾 Save Entry</button>
+      <button class="btn btn-ghost" onclick="clearLog()">Clear Form</button>
+    </div>
+
+    <div class="card">
+      <div class="card-label">⚙️ Cycle Settings</div>
+      <div class="set-row" style="border-bottom:1px solid var(--pink-pale)">
+        <div><div class="set-row-lbl">Cycle Length</div><div class="set-row-sub">Average days in your cycle</div></div>
+        <input type="number" class="num-input" id="s-cycle" min="21" max="40" value="28">
+      </div>
+      <div class="set-row">
+        <div><div class="set-row-lbl">Period Duration</div><div class="set-row-sub">Average days of bleeding</div></div>
+        <input type="number" class="num-input" id="s-dur" min="2" max="10" value="5">
+      </div>
+      <button class="btn btn-pink" style="margin-top:10px" onclick="saveSettings()">Save Settings ✓</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════ CALENDAR ═══════════════ -->
+  <div class="screen" id="s-cal">
+    <div style="height:20px"></div>
+    <div class="section-title">📅 Calendar</div>
+    <div class="card">
+      <div class="cal-header">
+        <div class="cal-month-name" id="cal-title">April 2026</div>
+        <div class="cal-arrows">
+          <div class="cal-arrow" onclick="chMonth(-1)">‹</div>
+          <div class="cal-arrow" onclick="chMonth(1)">›</div>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-legend">
+        <div class="cal-leg"><div class="cal-leg-dot" style="background:#F4628F"></div>Period</div>
+        <div class="cal-leg"><div class="cal-leg-dot" style="background:#F0BC5E"></div>Ovulation</div>
+        <div class="cal-leg"><div class="cal-leg-dot" style="background:#6BBFA3"></div>Fertile</div>
+        <div class="cal-leg"><div class="cal-leg-dot" style="background:#C27BE0"></div>Luteal</div>
+        <div class="cal-leg"><div class="cal-leg-dot" style="background:#7EC8E3"></div>Follicular</div>
+        <div class="cal-leg">· logged</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ AI ═══════════════ -->
+  <div class="screen" id="s-ai">
+    <div style="height:20px"></div>
+    <div class="ai-header">
+      <div class="ai-header-title">✨ Ask Flora AI</div>
+      <div class="ai-header-sub">Personalized insights powered by Pollinations AI — free, no login needed 💕</div>
+    </div>
+
+    <div class="quick-row">
+      <button class="qbtn" onclick="qAsk('What phase am I in right now and what should I expect?')">📍 My phase</button>
+      <button class="qbtn" onclick="qAsk('Analyze my cycle patterns and give detailed insights')">📊 Analyze cycle</button>
+      <button class="qbtn" onclick="qAsk('What nutrition tips are best for my current phase?')">🥗 Nutrition</button>
+      <button class="qbtn" onclick="qAsk('When is my most fertile window and peak ovulation day?')">🌸 Fertility</button>
+      <button class="qbtn" onclick="qAsk('What exercises work best for my current cycle phase?')">🏃 Exercise</button>
+      <button class="qbtn" onclick="qAsk('How can I manage PMS symptoms and mood swings?')">💊 PMS help</button>
+      <button class="qbtn" onclick="qAsk('What could cause irregular cycles and how to regulate them?')">⚡ Irregular cycle</button>
+      <button class="qbtn" onclick="qAsk('Give me a full health and wellness report based on all my data')">📋 Full report</button>
+    </div>
+
+    <div class="ai-input-row">
+      <input class="ai-inp" id="ai-q" placeholder="Ask Flora anything about your cycle…" onkeydown="if(event.key==='Enter')sendAI()">
+      <button class="ai-send" id="ai-btn" onclick="sendAI()">Send 💌</button>
+    </div>
+
+    <div class="ai-bubble" id="ai-box">
+      <div class="ai-bubble-tag">🌸 Flora AI</div>
+      <p style="color:var(--text-soft);font-style:italic">Hi gorgeous! 💕 I'm Flora, your personal cycle AI. Ask me anything — I'll use your logged data to give you personalized, accurate insights about your cycle, symptoms, and wellbeing.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ HISTORY ═══════════════ -->
+  <div class="screen" id="s-hist">
+    <div style="height:20px"></div>
+    <div class="section-title">📜 Period History</div>
+    <div id="hist-list"></div>
+  </div>
+
+  <!-- ═══════════════ SETTINGS ═══════════════ -->
+  <div class="screen" id="s-set">
+    <div style="height:20px"></div>
+    <div class="section-title">⚙️ Settings</div>
+    <div class="card">
+      <div class="set-row">
+        <div><div class="set-row-lbl">Period Reminders</div><div class="set-row-sub">Notify 2 days before predicted period</div></div>
+        <label class="toggle"><input type="checkbox" id="p-notif" checked><span class="tslider"></span></label>
+      </div>
+      <div class="set-row">
+        <div><div class="set-row-lbl">Include Symptoms in AI</div><div class="set-row-sub">Share symptom data with Flora AI</div></div>
+        <label class="toggle"><input type="checkbox" id="p-symp" checked><span class="tslider"></span></label>
+      </div>
+      <div class="set-row">
+        <div><div class="set-row-lbl">Show Fertile Window</div><div class="set-row-sub">Display fertility days on calendar</div></div>
+        <label class="toggle"><input type="checkbox" id="p-fert-tog" checked><span class="tslider"></span></label>
+      </div>
+      <div class="set-row" style="border:none">
+        <div><div class="set-row-lbl" style="color:var(--pink)">Clear All Data</div><div class="set-row-sub">Permanently delete all entries</div></div>
+        <button class="btn btn-ghost" style="width:auto;padding:9px 16px;font-size:.78rem;border-radius:12px" onclick="wipeData()">Clear</button>
+      </div>
+    </div>
+
+    <div class="about-card">
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:8px">🌸 About Flora</div>
+      <p style="font-size:.82rem;line-height:1.7;color:var(--text-mid)">
+        <strong>Flora</strong> is your beautiful AI-powered menstrual cycle tracker. All predictions use your personal data for maximum accuracy.<br><br>
+        AI insights are powered by <strong style="color:var(--pink)">Pollinations AI</strong> — completely free with no account needed.<br><br>
+        <em>⚠️ Flora is not a medical device. Always consult your doctor for medical advice.</em>
+      </p>
+    </div>
+  </div>
+
+</div><!-- end screen-wrap -->
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nb-home" onclick="go('home')">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Home</span>
+  </button>
+  <button class="nav-btn" id="nb-log" onclick="go('log')">
+    <span class="nav-icon">📝</span>
+    <span class="nav-label">Log</span>
+  </button>
+  <button class="nav-btn" id="nb-cal" onclick="go('cal')">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">Calendar</span>
+  </button>
+  <button class="nav-btn" id="nb-ai" onclick="go('ai')">
+    <span class="nav-icon">✨</span>
+    <span class="nav-label">Flora AI</span>
+  </button>
+  <button class="nav-btn" id="nb-hist" onclick="go('hist')">
+    <span class="nav-icon">📜</span>
+    <span class="nav-label">History</span>
+  </button>
+  <button class="nav-btn" id="nb-set" onclick="go('set')">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label">Settings</span>
+  </button>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ───────────────────────────────────────
+// STATE
+// ───────────────────────────────────────
+let S = { logs:[], cycleLen:28, periodDur:5 };
+try { const d=localStorage.getItem('flora-v1'); if(d) S={...S,...JSON.parse(d)}; } catch(e){}
+const save = () => { try{localStorage.setItem('flora-v1',JSON.stringify(S));}catch(e){} };
+
+// ───────────────────────────────────────
+// NAV
+// ───────────────────────────────────────
+let curPage = 'home';
+function go(p) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('s-'+p).classList.add('active');
+  document.getElementById('nb-'+p).classList.add('active');
+  document.getElementById('screenWrap').scrollTop = 0;
+  curPage = p;
+  if(p==='home') renderHome();
+  if(p==='cal') renderCal();
+  if(p==='hist') renderHist();
+}
+
+// ───────────────────────────────────────
+// HELPERS
+// ───────────────────────────────────────
+const addDays = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return r; };
+const iso = d => d.toISOString().split('T')[0];
+const today = () => iso(new Date());
+const diff = (a,b) => Math.round((new Date(b)-new Date(a))/864e5);
+const fmtS = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+const fmtF = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ───────────────────────────────────────
+// CYCLE MATH
+// ───────────────────────────────────────
+function lastLog() {
+  if(!S.logs.length) return null;
+  return S.logs.slice().sort((a,b)=>new Date(b.start)-new Date(a.start))[0];
+}
+function avgCycle() {
+  const s=S.logs.slice().sort((a,b)=>new Date(a.start)-new Date(b.start));
+  if(s.length<2) return S.cycleLen;
+  const d=[];
+  for(let i=1;i<s.length;i++) d.push(diff(s[i-1].start,s[i].start));
+  return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
+}
+function avgDur() {
+  const w=S.logs.filter(l=>l.end);
+  if(!w.length) return S.periodDur;
+  const d=w.map(l=>diff(l.start,l.end)+1);
+  return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
+}
+function cycleData() {
+  const last=lastLog(); if(!last) return null;
+  const cl=avgCycle(), pd=avgDur();
+  const dayN=diff(last.start,today())+1;
+  const nextP=addDays(last.start,cl);
+  const daysLeft=diff(today(),iso(nextP));
+  const ovuDay=addDays(last.start,cl-14);
+  const fertS=addDays(ovuDay,-5), fertE=addDays(ovuDay,1);
+  const ovD=cl-14;
+  let phase='follicular';
+  if(dayN<=pd) phase='period';
+  else if(dayN>=ovD-5 && dayN<ovD) phase='fertile';
+  else if(dayN===ovD) phase='ovulation';
+  else if(dayN>ovD) phase='luteal';
+  return {last,cl,pd,dayN,nextP,daysLeft,ovuDay,fertS,fertE,phase};
+}
+
+// ───────────────────────────────────────
+// HOME RENDER
+// ───────────────────────────────────────
+function renderHome() {
+  const cd=cycleData();
+  const cl=cd?cd.cl:S.cycleLen, pd=cd?cd.pd:S.periodDur;
+  document.getElementById('h-avg').textContent=cl;
+  document.getElementById('h-dur-sub').textContent=`${pd} day period`;
+
+  const greetings=['Good morning ☀️','Hello, gorgeous 💕','Hey beautiful 🌸','Hi there, lovely 🌷'];
+  const g=greetings[new Date().getHours()%greetings.length];
+  document.getElementById('header-greeting').textContent=cd?`${g} — Day ${cd.dayN} of your cycle`:g;
+
+  if(!cd){
+    document.getElementById('h-day').textContent='—';
+    document.getElementById('h-next').textContent='—';
+    document.getElementById('h-phase-short').textContent='Log period';
+    document.getElementById('h-next-sub').textContent='No data yet';
+    document.getElementById('h-phase-badge').textContent='🌸 Log your first period to start';
+    document.getElementById('h-phase-badge').className='phase-badge phase-period';
+    ['p-next','p-ovu','p-fert','p-luteal'].forEach(i=>document.getElementById(i).textContent='—');
+    drawDonut(null); return;
+  }
+
+  document.getElementById('h-day').textContent=cd.dayN;
+  document.getElementById('h-next').textContent=Math.max(0,cd.daysLeft);
+  document.getElementById('h-next-sub').textContent=fmtF(iso(cd.nextP));
+
+  const pn={'period':'🌺 Period Phase','follicular':'🌱 Follicular Phase','fertile':'🌸 Fertile Window','ovulation':'🥚 Ovulation Day','luteal':'🌙 Luteal Phase'};
+  const pc={'period':'phase-period','follicular':'phase-follicular','fertile':'phase-fertile','ovulation':'phase-ovulation','luteal':'phase-luteal'};
+  const badge=document.getElementById('h-phase-badge');
+  badge.textContent=pn[cd.phase]||cd.phase;
+  badge.className='phase-badge '+(pc[cd.phase]||'phase-follicular');
+  document.getElementById('h-phase-short').textContent=(pn[cd.phase]||cd.phase).replace(/^[^\s]+\s/,'');
+
+  document.getElementById('p-next').textContent=fmtS(iso(cd.nextP));
+  document.getElementById('p-ovu').textContent=fmtS(iso(cd.ovuDay));
+  document.getElementById('p-fert').textContent=`${fmtS(iso(cd.fertS))}–${fmtS(iso(cd.fertE))}`;
+  const lS=addDays(cd.ovuDay,1);
+  document.getElementById('p-luteal').textContent=`${fmtS(iso(lS))}–${fmtS(iso(cd.nextP))}`;
+  drawDonut(cd);
+}
+
+// ───────────────────────────────────────
+// DONUT CANVAS
+// ───────────────────────────────────────
+function drawDonut(cd) {
+  const canvas=document.getElementById('donut');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,RO=110,RI=68;
+  ctx.clearRect(0,0,W,H);
+  const cl=cd?cd.cl:28, pd=cd?cd.pd:5, ovD=cl-14;
+  const segs=[
+    {start:0,len:pd,color:'#F4628F',label:'Period'},
+    {start:pd,len:ovD-pd-5,color:'#7EC8E3',label:'Follicular'},
+    {start:ovD-5,len:7,color:'#6BBFA3',label:'Fertile'},
+    {start:ovD,len:1,color:'#F0BC5E',label:'Ovulation'},
+    {start:ovD+1,len:cl-ovD-1,color:'#C27BE0',label:'Luteal'},
+  ];
+  segs.forEach(seg=>{
+    if(seg.len<=0) return;
+    const a1=(seg.start/cl)*Math.PI*2-Math.PI/2;
+    const a2=((seg.start+seg.len)/cl)*Math.PI*2-Math.PI/2;
+    ctx.beginPath();
+    ctx.arc(cx,cy,RO,a1,a2);
+    ctx.arc(cx,cy,RI,a2,a1,true);
+    ctx.closePath();
+    ctx.fillStyle=seg.color+'55';
+    ctx.fill();
+    ctx.strokeStyle=seg.color;
+    ctx.lineWidth=2.5;
+    ctx.stroke();
+  });
+  // center
+  ctx.beginPath(); ctx.arc(cx,cy,RI-2,0,Math.PI*2);
+  const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,RI);
+  grad.addColorStop(0,'#FFF7FA'); grad.addColorStop(1,'#FDE8EF');
+  ctx.fillStyle=grad; ctx.fill();
+  // today dot
+  if(cd){
+    const ang=((cd.dayN-1)/cl)*Math.PI*2-Math.PI/2;
+    const tr=RO+10, tx=cx+tr*Math.cos(ang), ty=cy+tr*Math.sin(ang);
+    ctx.beginPath(); ctx.arc(tx,ty,7,0,Math.PI*2);
+    ctx.fillStyle='#F4628F'; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.stroke();
+  }
+  // text
+  ctx.textAlign='center';
+  ctx.fillStyle='#2D1B2E';
+  ctx.font='700 15px Nunito, sans-serif';
+  ctx.fillText(cd?`Day ${cd.dayN}`:'Start here',cx,cy-4);
+  ctx.fillStyle='#B08898';
+  ctx.font='600 11px Nunito, sans-serif';
+  ctx.fillText(cd?`${cl}-day cycle`:'Log a period',cx,cy+14);
+}
+
+// ───────────────────────────────────────
+// LOG FORM
+// ───────────────────────────────────────
+let selFlow=null, selMood=null;
+function tFlow(el){ document.querySelectorAll('.flow-btn').forEach(b=>b.classList.remove('on')); el.classList.add('on'); selFlow=el.dataset.f; }
+function tMood(el){ document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('on')); el.classList.add('on'); selMood=el.dataset.m; }
+function clearLog(){
+  document.getElementById('l-start').value='';
+  document.getElementById('l-end').value='';
+  document.getElementById('l-notes').value='';
+  document.querySelectorAll('.flow-btn,.mood-btn,.chip').forEach(e=>e.classList.remove('on'));
+  selFlow=null; selMood=null;
+}
+function saveLog(){
+  const start=document.getElementById('l-start').value;
+  if(!start){ toast('⚠️ Please select a start date'); return; }
+  const syms=[...document.querySelectorAll('#symp-chips .chip.on')].map(c=>c.textContent);
+  S.logs.push({id:Date.now(),start,end:document.getElementById('l-end').value||null,flow:selFlow,mood:selMood,symptoms:syms,notes:document.getElementById('l-notes').value,at:today()});
+  save(); clearLog(); renderHome();
+  toast('🌸 Period logged! You\'re amazing 💕');
+}
+function saveSettings(){
+  const cl=parseInt(document.getElementById('s-cycle').value);
+  const pd=parseInt(document.getElementById('s-dur').value);
+  if(cl>=21&&cl<=40) S.cycleLen=cl;
+  if(pd>=2&&pd<=10) S.periodDur=pd;
+  save(); renderHome();
+  toast('✓ Settings saved!');
+}
+
+// ───────────────────────────────────────
+// CALENDAR
+// ───────────────────────────────────────
+let calY=new Date().getFullYear(), calM=new Date().getMonth();
+function chMonth(d){ calM+=d; if(calM>11){calM=0;calY++;}else if(calM<0){calM=11;calY--;} renderCal(); }
+function dayClass(ds){
+  const cd=cycleData();
+  const loggedDs=new Set();
+  S.logs.forEach(l=>{
+    if(l.start) loggedDs.add(l.start);
+    if(l.end){ let d=new Date(l.start); while(iso(d)<=l.end){loggedDs.add(iso(d));d=addDays(d,1);} }
+  });
+  if(loggedDs.has(ds)) return ['period','logged'];
+  const cls=[];
+  const checkCycle=(startStr,i)=>{
+    if(!startStr) return false;
+    const dn=diff(startStr,ds)+1;
+    const cl=cd.cl, pd=cd.pd, ovD=cl-14;
+    if(dn<1||dn>cl) return false;
+    if(dn<=pd) cls.push('period');
+    else if(dn<ovD-5) cls.push('follicular');
+    else if(dn>=ovD-5&&dn<ovD) cls.push('fertile');
+    else if(dn===ovD) cls.push('ovulation');
+    else cls.push('luteal');
+    return true;
+  };
+  if(cd){
+    if(!checkCycle(cd.last.start)){
+      for(let c=1;c<=6;c++){
+        if(checkCycle(iso(addDays(new Date(cd.last.start),cd.cl*c)))) break;
+        if(checkCycle(iso(addDays(new Date(cd.last.start),-cd.cl*c)))) break;
+      }
+    }
+  }
+  if(S.logs.some(l=>l.start===ds)) cls.push('logged');
+  return [...new Set(cls)];
+}
+function renderCal(){
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-title').textContent=`${MONTHS[calM]} ${calY}`;
+  const g=document.getElementById('cal-grid'); g.innerHTML='';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{ const e=document.createElement('div'); e.className='cal-dn'; e.textContent=d; g.appendChild(e); });
+  const fd=new Date(calY,calM,1).getDay();
+  const dim=new Date(calY,calM+1,0).getDate();
+  const td=today();
+  for(let i=0;i<fd;i++){ const e=document.createElement('div'); e.className='cal-d emp'; g.appendChild(e); }
+  for(let d=1;d<=dim;d++){
+    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const e=document.createElement('div');
+    e.className='cal-d '+dayClass(ds).join(' ');
+    if(ds===td) e.classList.add('td');
+    e.textContent=d;
+    g.appendChild(e);
+  }
+}
+
+// ───────────────────────────────────────
+// HISTORY
+// ───────────────────────────────────────
+function renderHist(){
+  const el=document.getElementById('hist-list');
+  const sorted=S.logs.slice().sort((a,b)=>new Date(b.start)-new Date(a.start));
+  if(!sorted.length){
+    el.innerHTML=`<div class="hist-empty"><span class="big">🌸</span><p>No entries yet.<br>Start by logging your first period!</p></div>`;
+    return;
+  }
+  el.innerHTML=sorted.map(l=>`
+    <div class="hist-item" id="hi-${l.id}">
+      <div class="hist-date-col">
+        <div class="hist-date-main">${fmtS(l.start)}</div>
+        ${l.end?`<div class="hist-date-end">– ${fmtS(l.end)}</div>`:''}
+      </div>
+      <div class="hist-chips">
+        ${l.flow?`<span class="hist-chip">Flow ${['','Light','Medium','Heavy','V.Heavy'][l.flow]}</span>`:''}
+        ${l.mood?`<span class="hist-chip">${l.mood}</span>`:''}
+        ${l.symptoms.map(s=>`<span class="hist-chip">${s}</span>`).join('')}
+        ${l.notes?`<span class="hist-chip">📝</span>`:''}
+      </div>
+      <button class="hist-del" onclick="delLog(${l.id})">✕</button>
+    </div>`).join('');
+}
+function delLog(id){ S.logs=S.logs.filter(l=>l.id!==id); save(); renderHist(); renderHome(); toast('Entry deleted'); }
+function wipeData(){ if(confirm('Delete ALL your Flora data? This cannot be undone.♻️')){ S.logs=[]; save(); renderHist(); renderHome(); toast('All data cleared'); } }
+
+// ───────────────────────────────────────
+// MARKDOWN → HTML PARSER
+// ───────────────────────────────────────
+function md2html(text) {
+  // Escape HTML first
+  let t = text
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;');
+
+  // Headers
+  t = t.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+  t = t.replace(/^## (.+)$/gm,  '<h3>$1</h3>');
+  t = t.replace(/^# (.+)$/gm,   '<h3>$1</h3>');
+
+  // Bold & italic
+  t = t.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  t = t.replace(/\*\*(.+?)\*\*/g,     '<strong>$1</strong>');
+  t = t.replace(/\*(.+?)\*/g,         '<em>$1</em>');
+  t = t.replace(/__(.+?)__/g,         '<strong>$1</strong>');
+  t = t.replace(/_(.+?)_/g,           '<em>$1</em>');
+
+  // Horizontal rule
+  t = t.replace(/^---+$/gm, '<hr>');
+
+  // Unordered lists
+  t = t.replace(/^[\*\-•] (.+)$/gm, '<li>$1</li>');
+  t = t.replace(/(<li>.*<\/li>\n?)+/gs, match => `<ul>${match}</ul>`);
+
+  // Ordered lists
+  t = t.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+  // wrap orphan li blocks that aren't already in ul
+  t = t.replace(/(?<!<\/ul>)(<li>(?:(?!<ul>).)*<\/li>\n?)+/gs, match => {
+    if (match.includes('<ul>')) return match;
+    return `<ol>${match}</ol>`;
+  });
+
+  // Emoji section headers (lines starting with emoji + text, no #)
+  t = t.replace(/^([\u{1F300}-\u{1FAFF}\u{2600}-\u{27FF}][\uFE0F]?\s.+)$/gmu, '<div class="ai-section">$1</div>');
+
+  // Paragraphs — wrap lines not already in block elements
+  const lines = t.split('\n');
+  const blocked = new Set(['<h3>','<h4>','<ul>','</ul>','<ol>','</ol>','<li>','</li>','<hr>','<div','</div']);
+  const out = [];
+  let buf = '';
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      if (buf) { out.push(`<p>${buf}</p>`); buf=''; }
+      return;
+    }
+    const isBlock = blocked.some(b => trimmed.startsWith(b));
+    if (isBlock) {
+      if (buf) { out.push(`<p>${buf}</p>`); buf=''; }
+      out.push(trimmed);
+    } else {
+      buf = buf ? buf + ' ' + trimmed : trimmed;
+    }
+  });
+  if (buf) out.push(`<p>${buf}</p>`);
+  return out.join('\n');
+}
+
+// ───────────────────────────────────────
+// AI
+// ───────────────────────────────────────
+function qAsk(q){ document.getElementById('ai-q').value=q; sendAI(); }
+async function sendAI(){
+  const inp=document.getElementById('ai-q');
+  const q=inp.value.trim(); if(!q) return;
+  inp.value='';
+  const btn=document.getElementById('ai-btn');
+  const box=document.getElementById('ai-box');
+  btn.disabled=true; btn.textContent='…💭';
+  box.innerHTML='<div class="ai-bubble-tag">🌸 Flora AI</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+
+  const cd=cycleData();
+  const ctx=[
+    `Today: ${today()}`,
+    cd?`Cycle day: ${cd.dayN} of ${cd.cl}`:'No cycle data yet.',
+    cd?`Phase: ${cd.phase}`:'',
+    cd?`Days to next period: ${Math.max(0,cd.daysLeft)}`:'',
+    cd?`Avg cycle length: ${cd.cl} days, period duration: ${cd.pd} days`:'',
+    cd?`Next period: ${fmtF(iso(cd.nextP))}`:'',
+    cd?`Ovulation: ${fmtF(iso(cd.ovuDay))}`:'',
+    S.logs.length?`Total logged cycles: ${S.logs.length}`:'',
+    ...S.logs.slice().sort((a,b)=>new Date(b.start)-new Date(a.start)).slice(0,3).map(l=>`Recent log ${l.start}: flow=${l.flow||'?'}, mood=${l.mood||'?'}, symptoms=${l.symptoms.join(',')||'none'}`)
+  ].filter(Boolean).join('\n');
+
+  try {
+    const res=await fetch('https://text.pollinations.ai/',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'openai',
+        messages:[
+          {role:'system',content:`You are Flora, a warm, knowledgeable, and supportive menstrual health AI assistant. You are friendly, empathetic, and speak to women with care and positivity. Use a conversational yet informative tone. Format your responses with clear sections, bullet points where helpful, and bold key terms. Use relevant emojis tastefully to make responses feel approachable — but not excessively. Keep responses focused and practical (200-350 words). Always end with an encouraging note. You are NOT a medical replacement — recommend consulting a doctor for serious concerns.`},
+          {role:'user',content:`MY CYCLE DATA:\n${ctx}\n\nQUESTION: ${q}`}
+        ],
+        seed:Math.floor(Math.random()*9999)
+      })
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const raw=await res.text();
+    box.innerHTML='<div class="ai-bubble-tag">🌸 Flora AI</div>'+md2html(raw);
+  } catch(e) {
+    box.innerHTML=`<div class="ai-bubble-tag">🌸 Flora AI</div><p style="color:var(--pink)">⚠️ Couldn't reach Flora AI right now. Please check your internet connection and try again.</p><p style="color:var(--text-soft);font-size:.78rem">Error: ${e.message}</p>`;
+  } finally {
+    btn.disabled=false; btn.textContent='Send 💌';
+  }
+}
+
+// ───────────────────────────────────────
+// INIT
+// ───────────────────────────────────────
+document.getElementById('l-start').value=today();
+document.getElementById('s-cycle').value=S.cycleLen;
+document.getElementById('s-dur').value=S.periodDur;
+renderHome();
+renderCal();
+</script>
+</body>
+</html>
