@@ -42,7 +42,6 @@ body {
   position: relative;
 }
 
-/* ── Scrollable content area ── */
 .screen-wrap {
   flex: 1;
   overflow-y: auto;
@@ -53,7 +52,6 @@ body {
 .screen-wrap::-webkit-scrollbar { width: 3px; }
 .screen-wrap::-webkit-scrollbar-thumb { background: var(--pink-light); border-radius: 4px; }
 
-/* ── Screen panels ── */
 .screen { display: none; padding: 0 16px; animation: fadeSlide .3s ease; }
 .screen.active { display: block; }
 @keyframes fadeSlide { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
@@ -123,7 +121,6 @@ body {
   background: linear-gradient(90deg, var(--pink), var(--lilac));
 }
 
-/* ── Section title ── */
 .section-title {
   font-family: 'Playfair Display', serif;
   font-size: 1.25rem; font-weight: 700; color: var(--text);
@@ -352,7 +349,6 @@ textarea.form-input { resize:vertical; min-height:80px; }
   color:var(--pink); font-size:.65rem; font-weight:800; letter-spacing:.06em;
   padding:4px 10px; border-radius:10px; margin-bottom:12px;
 }
-/* Formatted AI response */
 .ai-bubble h3 { font-family:'Playfair Display',serif; font-size:1rem; color:var(--text); margin:14px 0 6px; font-weight:700; }
 .ai-bubble h4 { font-size:.88rem; font-weight:800; color:var(--pink); margin:12px 0 5px; }
 .ai-bubble p { margin-bottom:10px; }
@@ -436,7 +432,7 @@ textarea.form-input { resize:vertical; min-height:80px; }
 }
 .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
-/* ── Floating petals decoration ── */
+/* ── Floating petals ── */
 .petal {
   position:fixed; font-size:1.2rem; pointer-events:none; z-index:0;
   animation:floatPetal linear infinite;
@@ -449,22 +445,99 @@ textarea.form-input { resize:vertical; min-height:80px; }
   100% { transform:translateY(-80px) rotate(360deg); opacity:0; }
 }
 
-/* ── Gradient divider ── */
 .divider {
   height:1px;
   background:linear-gradient(90deg,transparent,var(--pink-pale),transparent);
   margin:8px 0 16px;
 }
 
-/* About card */
 .about-card {
   background:linear-gradient(135deg,#FDE8EF,#EFE0F9);
   border-radius:22px; padding:20px; margin-bottom:14px;
   border:1px solid rgba(244,98,143,.15);
 }
+
+/* ── Splash ── */
+.splash {
+  position:fixed; inset:0; z-index:9999; max-width:480px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(160deg,#F4628F 0%,#C27BE0 55%,#F5A673 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:40px 32px;
+  transition:opacity .7s ease, filter .7s ease;
+}
+.splash.hide { opacity:0; filter:blur(4px); pointer-events:none; }
+.splash-hearts { font-size:3.4rem; margin-bottom:14px; animation:heartPop 1.3s ease infinite alternate; }
+@keyframes heartPop { from{transform:scale(1);}to{transform:scale(1.16) rotate(-5deg);} }
+.splash-title {
+  font-family:'Playfair Display',serif; font-size:2rem; font-weight:700;
+  color:#fff; text-shadow:0 2px 14px rgba(0,0,0,.18); margin-bottom:12px; line-height:1.25;
+}
+.splash-msg {
+  font-size:.95rem; color:rgba(255,255,255,.93); line-height:1.78;
+  font-weight:500; margin-bottom:22px; max-width:290px;
+}
+.splash-sig {
+  font-family:'Playfair Display',serif; font-size:1.1rem; font-style:italic;
+  color:rgba(255,255,255,.88); margin-bottom:30px;
+}
+.splash-btn {
+  background:rgba(255,255,255,.22); backdrop-filter:blur(10px);
+  border:2px solid rgba(255,255,255,.55); border-radius:30px;
+  padding:14px 38px; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:800;
+  color:#fff; cursor:pointer; letter-spacing:.03em; transition:all .22s;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+}
+.splash-btn:hover { background:rgba(255,255,255,.35); }
+.splash-floats { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.sf { position:absolute; font-size:1.6rem; animation:sfFloat linear infinite; opacity:0; }
+@keyframes sfFloat{0%{transform:translateY(110vh) rotate(0);opacity:0;}10%{opacity:.65;}90%{opacity:.3;}100%{transform:translateY(-80px) rotate(360deg);opacity:0;}}
+
+/* ── Love note card ── */
+.love-note {
+  background:linear-gradient(135deg,#FF8FAE 0%,#C27BE0 100%);
+  border-radius:24px; padding:22px 52px 22px 20px; margin-bottom:14px;
+  position:relative; overflow:hidden;
+  box-shadow:0 10px 32px rgba(244,98,143,.28);
+}
+.love-note::after {
+  content:'💌'; position:absolute; right:16px; top:50%; transform:translateY(-50%);
+  font-size:3.6rem; opacity:.18; pointer-events:none;
+}
+.love-note-from { font-size:.63rem; font-weight:800; text-transform:uppercase; letter-spacing:.11em; color:rgba(255,255,255,.72); margin-bottom:6px; }
+.love-note-msg { font-family:'Playfair Display',serif; font-size:1rem; color:#fff; line-height:1.7; font-style:italic; }
+.love-note-sig { font-size:.78rem; font-weight:800; color:rgba(255,255,255,.82); margin-top:10px; }
+
+/* ── John care tip ── */
+.john-tip {
+  background:var(--pink-pale); border-radius:16px; padding:13px 15px;
+  margin-top:10px; border-left:4px solid var(--pink);
+  display:flex; gap:10px; align-items:flex-start;
+}
+.john-tip-icon { font-size:1.25rem; flex-shrink:0; margin-top:1px; }
+.john-tip-text { font-size:.81rem; color:var(--text-mid); line-height:1.62; font-weight:600; }
+.john-tip-text strong { color:var(--pink); }
 </style>
 </head>
 <body>
+
+<!-- ═══ SPLASH ═══ -->
+<div class="splash" id="splash">
+  <div class="splash-floats">
+    <span class="sf" style="left:5%;animation-duration:9s;animation-delay:0s">🌸</span>
+    <span class="sf" style="left:20%;animation-duration:12s;animation-delay:2s">💕</span>
+    <span class="sf" style="left:40%;animation-duration:10s;animation-delay:1s">🌷</span>
+    <span class="sf" style="left:60%;animation-duration:8s;animation-delay:3s">💗</span>
+    <span class="sf" style="left:78%;animation-duration:11s;animation-delay:.5s">🌺</span>
+    <span class="sf" style="left:90%;animation-duration:13s;animation-delay:4s">💖</span>
+  </div>
+  <div class="splash-hearts">💝</div>
+  <div class="splash-title">This is for you,<br>my love 🌸</div>
+  <div class="splash-msg">
+    I made this little app just for you, because I care about you so much — especially during those tough days. You deserve all the love and comfort in the world. 🥺
+  </div>
+  <div class="splash-sig">— forever yours, John 💌</div>
+  <button class="splash-btn" onclick="closeSplash()">Open Flora 🌸</button>
+</div>
 
 <!-- Petals -->
 <span class="petal" style="left:8%;animation-duration:12s;animation-delay:0s">🌸</span>
@@ -475,18 +548,24 @@ textarea.form-input { resize:vertical; min-height:80px; }
 
 <div class="screen-wrap" id="screenWrap">
 
-  <!-- ═══════════════ HOME ═══════════════ -->
+  <!-- ═══════ HOME ═══════ -->
   <div class="screen active" id="s-home">
     <div class="app-header">
       <div class="header-top">
         <div class="app-logo"><span class="flower">🌸</span>Flora</div>
-        <div class="header-badge">✦ Powered by Pollinations AI</div>
+        <div class="header-badge">💌 Made with love by John</div>
       </div>
       <div class="header-subtitle" id="header-greeting">Your personal cycle companion 💕</div>
     </div>
 
     <div style="padding:0 0">
-      <div class="stat-row" style="margin-top:16px">
+      <div class="love-note" style="margin-top:16px">
+        <div class="love-note-from">💌 A note from John</div>
+        <div class="love-note-msg" id="daily-love-msg">Loading your note…</div>
+        <div class="love-note-sig">— John loves you so much 🌸</div>
+      </div>
+
+      <div class="stat-row">
         <div class="stat-pill">
           <div class="stat-pill-val" id="h-day">—</div>
           <div class="stat-pill-lbl">Cycle Day</div>
@@ -518,6 +597,10 @@ textarea.form-input { resize:vertical; min-height:80px; }
           <span><span class="pdot" style="background:#7EC8E3"></span>Follicular</span>
           <span><span class="pdot" style="background:#F0BC5E"></span>Ovulation</span>
           <span><span class="pdot" style="background:#C27BE0"></span>Luteal</span>
+        </div>
+        <div class="john-tip" id="john-tip-box" style="display:none">
+          <div class="john-tip-icon" id="john-tip-icon">🥺</div>
+          <div class="john-tip-text" id="john-tip-text"></div>
         </div>
       </div>
 
@@ -552,7 +635,7 @@ textarea.form-input { resize:vertical; min-height:80px; }
     </div>
   </div>
 
-  <!-- ═══════════════ LOG ═══════════════ -->
+  <!-- ═══════ LOG ═══════ -->
   <div class="screen" id="s-log">
     <div style="height:20px"></div>
     <div class="section-title">📝 Log Your Period</div>
@@ -625,7 +708,7 @@ textarea.form-input { resize:vertical; min-height:80px; }
     </div>
   </div>
 
-  <!-- ═══════════════ CALENDAR ═══════════════ -->
+  <!-- ═══════ CALENDAR ═══════ -->
   <div class="screen" id="s-cal">
     <div style="height:20px"></div>
     <div class="section-title">📅 Calendar</div>
@@ -649,12 +732,12 @@ textarea.form-input { resize:vertical; min-height:80px; }
     </div>
   </div>
 
-  <!-- ═══════════════ AI ═══════════════ -->
+  <!-- ═══════ AI ═══════ -->
   <div class="screen" id="s-ai">
     <div style="height:20px"></div>
     <div class="ai-header">
-      <div class="ai-header-title">✨ Ask Flora AI</div>
-      <div class="ai-header-sub">Personalized insights powered by Pollinations AI — free, no login needed 💕</div>
+      <div class="ai-header-title">💌 Ask Flora (John's gift to you)</div>
+      <div class="ai-header-sub">John set this up so I can look after you always 🥺 Ask me anything, baby 🌸</div>
     </div>
 
     <div class="quick-row">
@@ -674,34 +757,35 @@ textarea.form-input { resize:vertical; min-height:80px; }
     </div>
 
     <div class="ai-bubble" id="ai-box">
-      <div class="ai-bubble-tag">🌸 Flora AI</div>
-      <p style="color:var(--text-soft);font-style:italic">Hi gorgeous! 💕 I'm Flora, your personal cycle AI. Ask me anything — I'll use your logged data to give you personalized, accurate insights about your cycle, symptoms, and wellbeing.</p>
+      <div class="ai-bubble-tag">💌 Flora · John's Gift to You</div>
+      <p>Hey baby 🥺💕 John set me up especially for you — I'm here to help you understand your body, take care of yourself, and remind you that you're so loved, especially on the hard days.</p>
+      <p style="margin-top:8px">Ask me anything about your cycle, what you're feeling, or what you need right now. John wanted to make sure you always feel supported, even when he can't be there. 🌸</p>
     </div>
   </div>
 
-  <!-- ═══════════════ HISTORY ═══════════════ -->
+  <!-- ═══════ HISTORY ═══════ -->
   <div class="screen" id="s-hist">
     <div style="height:20px"></div>
     <div class="section-title">📜 Period History</div>
     <div id="hist-list"></div>
   </div>
 
-  <!-- ═══════════════ SETTINGS ═══════════════ -->
+  <!-- ═══════ SETTINGS ═══════ -->
   <div class="screen" id="s-set">
     <div style="height:20px"></div>
     <div class="section-title">⚙️ Settings</div>
     <div class="card">
       <div class="set-row">
         <div><div class="set-row-lbl">Period Reminders</div><div class="set-row-sub">Notify 2 days before predicted period</div></div>
-        <label class="toggle"><input type="checkbox" id="p-notif" checked><span class="tslider"></span></label>
+        <label class="toggle"><input type="checkbox" id="p-notif"><span class="tslider"></span></label>
       </div>
       <div class="set-row">
         <div><div class="set-row-lbl">Include Symptoms in AI</div><div class="set-row-sub">Share symptom data with Flora AI</div></div>
-        <label class="toggle"><input type="checkbox" id="p-symp" checked><span class="tslider"></span></label>
+        <label class="toggle"><input type="checkbox" id="p-symp"><span class="tslider"></span></label>
       </div>
       <div class="set-row">
         <div><div class="set-row-lbl">Show Fertile Window</div><div class="set-row-sub">Display fertility days on calendar</div></div>
-        <label class="toggle"><input type="checkbox" id="p-fert-tog" checked><span class="tslider"></span></label>
+        <label class="toggle"><input type="checkbox" id="p-fert-tog"><span class="tslider"></span></label>
       </div>
       <div class="set-row" style="border:none">
         <div><div class="set-row-lbl" style="color:var(--pink)">Clear All Data</div><div class="set-row-sub">Permanently delete all entries</div></div>
@@ -709,11 +793,16 @@ textarea.form-input { resize:vertical; min-height:80px; }
       </div>
     </div>
 
+    <div class="card">
+      <div class="card-label">💾 Save Settings</div>
+      <button class="btn btn-pink" onclick="saveToggles()">Save Settings ✓</button>
+    </div>
+
     <div class="about-card">
       <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:8px">🌸 About Flora</div>
       <p style="font-size:.82rem;line-height:1.7;color:var(--text-mid)">
         <strong>Flora</strong> is your beautiful AI-powered menstrual cycle tracker. All predictions use your personal data for maximum accuracy.<br><br>
-        AI insights are powered by <strong style="color:var(--pink)">Pollinations AI</strong> — completely free with no account needed.<br><br>
+        AI insights are powered by <strong style="color:var(--pink)">Claude AI</strong> — intelligent, warm, and always here for you.<br><br>
         <em>⚠️ Flora is not a medical device. Always consult your doctor for medical advice.</em>
       </p>
     </div>
@@ -752,329 +841,458 @@ textarea.form-input { resize:vertical; min-height:80px; }
 <div id="toast" class="toast"></div>
 
 <script>
-// ───────────────────────────────────────
-// STATE
-// ───────────────────────────────────────
-let S = { logs:[], cycleLen:28, periodDur:5 };
-try { const d=localStorage.getItem('flora-v1'); if(d) S={...S,...JSON.parse(d)}; } catch(e){}
-const save = () => { try{localStorage.setItem('flora-v1',JSON.stringify(S));}catch(e){} };
+// ── STATE ──
+let S = {
+  logs: [],
+  cycleLen: 28,
+  periodDur: 5,
+  prefs: { notif: true, symp: true, fertTog: true }
+};
+try {
+  const d = localStorage.getItem('flora-v2');
+  if (d) S = { ...S, ...JSON.parse(d) };
+  if (!S.prefs) S.prefs = { notif: true, symp: true, fertTog: true };
+} catch(e) {}
+const save = () => { try { localStorage.setItem('flora-v2', JSON.stringify(S)); } catch(e) {} };
 
-// ───────────────────────────────────────
-// NAV
-// ───────────────────────────────────────
+// ── SPLASH (FIX #1: missing closeSplash function) ──
+function closeSplash() {
+  const el = document.getElementById('splash');
+  el.classList.add('hide');
+  setTimeout(() => { el.style.display = 'none'; }, 750);
+}
+
+// ── NAV ──
 let curPage = 'home';
 function go(p) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('s-'+p).classList.add('active');
-  document.getElementById('nb-'+p).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('s-' + p).classList.add('active');
+  document.getElementById('nb-' + p).classList.add('active');
   document.getElementById('screenWrap').scrollTop = 0;
   curPage = p;
-  if(p==='home') renderHome();
-  if(p==='cal') renderCal();
-  if(p==='hist') renderHist();
+  if (p === 'home') renderHome();
+  if (p === 'cal')  renderCal();
+  if (p === 'hist') renderHist();
+  if (p === 'set')  loadToggles(); // FIX #7: load prefs on settings open
 }
 
-// ───────────────────────────────────────
-// HELPERS
-// ───────────────────────────────────────
-const addDays = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return r; };
-const iso = d => d.toISOString().split('T')[0];
+// ── HELPERS ──
+const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+const iso  = d  => d.toISOString().split('T')[0];
 const today = () => iso(new Date());
-const diff = (a,b) => Math.round((new Date(b)-new Date(a))/864e5);
-const fmtS = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
-const fmtF = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+const diff  = (a, b) => Math.round((new Date(b) - new Date(a)) / 864e5);
+const fmtS  = d => d ? new Date(d+'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
+const fmtF  = d => d ? new Date(d+'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
 
 function toast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ───────────────────────────────────────
-// CYCLE MATH
-// ───────────────────────────────────────
+// ── CYCLE MATH ──
 function lastLog() {
-  if(!S.logs.length) return null;
-  return S.logs.slice().sort((a,b)=>new Date(b.start)-new Date(a.start))[0];
+  if (!S.logs.length) return null;
+  return S.logs.slice().sort((a, b) => new Date(b.start) - new Date(a.start))[0];
 }
 function avgCycle() {
-  const s=S.logs.slice().sort((a,b)=>new Date(a.start)-new Date(b.start));
-  if(s.length<2) return S.cycleLen;
-  const d=[];
-  for(let i=1;i<s.length;i++) d.push(diff(s[i-1].start,s[i].start));
-  return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
+  const s = S.logs.slice().sort((a, b) => new Date(a.start) - new Date(b.start));
+  if (s.length < 2) return S.cycleLen;
+  const d = [];
+  for (let i = 1; i < s.length; i++) d.push(diff(s[i-1].start, s[i].start));
+  const avg = Math.round(d.reduce((a, b) => a + b, 0) / d.length);
+  return (avg >= 21 && avg <= 45) ? avg : S.cycleLen;
 }
 function avgDur() {
-  const w=S.logs.filter(l=>l.end);
-  if(!w.length) return S.periodDur;
-  const d=w.map(l=>diff(l.start,l.end)+1);
-  return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
+  const w = S.logs.filter(l => l.end);
+  if (!w.length) return S.periodDur;
+  const d = w.map(l => diff(l.start, l.end) + 1);
+  return Math.round(d.reduce((a, b) => a + b, 0) / d.length);
 }
 function cycleData() {
-  const last=lastLog(); if(!last) return null;
-  const cl=avgCycle(), pd=avgDur();
-  const dayN=diff(last.start,today())+1;
-  const nextP=addDays(last.start,cl);
-  const daysLeft=diff(today(),iso(nextP));
-  const ovuDay=addDays(last.start,cl-14);
-  const fertS=addDays(ovuDay,-5), fertE=addDays(ovuDay,1);
-  const ovD=cl-14;
-  let phase='follicular';
-  if(dayN<=pd) phase='period';
-  else if(dayN>=ovD-5 && dayN<ovD) phase='fertile';
-  else if(dayN===ovD) phase='ovulation';
-  else if(dayN>ovD) phase='luteal';
-  return {last,cl,pd,dayN,nextP,daysLeft,ovuDay,fertS,fertE,phase};
+  const last = lastLog();
+  if (!last) return null;
+  const cl = avgCycle(), pd = avgDur();
+  const dayN = diff(last.start, today()) + 1;
+  const nextP = addDays(last.start, cl);
+  const daysLeft = diff(today(), iso(nextP));
+  const ovuDay = addDays(last.start, cl - 14);
+  const fertS = addDays(ovuDay, -5), fertE = addDays(ovuDay, 1);
+  const ovD = cl - 14;
+  let phase = 'follicular';
+  if (dayN <= pd)                        phase = 'period';
+  else if (dayN >= ovD - 5 && dayN < ovD) phase = 'fertile';
+  else if (dayN === ovD)                 phase = 'ovulation';
+  else if (dayN > ovD)                   phase = 'luteal';
+  return { last, cl, pd, dayN, nextP, daysLeft, ovuDay, fertS, fertE, ovD, phase };
 }
 
-// ───────────────────────────────────────
-// HOME RENDER
-// ───────────────────────────────────────
+// ── FIX #2+3: DAILY LOVE MESSAGES + JOHN TIPS PER PHASE ──
+const LOVE_MESSAGES = [
+  "Hey baby, I'm thinking of you right now 🥺 This app is my way of being by your side every single day, even when I can't be there in person. You mean everything to me. 💕",
+  "Good morning my love 🌸 I hope your body feels kind to you today. Remember: you are so strong, so beautiful, and so loved. I made this for you because you deserve all the care in the world.",
+  "Just a reminder that you're my favorite person on this entire planet 🌍💖 I hope today treats you gently. I'm always thinking of you, always in your corner.",
+  "My darling — no matter what today brings, you have me. Always. 🥰 I made this app so you never have to feel alone, even on your hardest days. I love you endlessly.",
+  "You are the most incredible human I know 🌷 Your strength amazes me every single day. I made this little corner of the world just for you — because you deserve to feel understood and cared for.",
+  "Hey gorgeous 💕 I know some days are harder than others, and on those days I want you to know: I see you, I love you, and I'm so proud of you. Always.",
+  "Sweet dreams, my love 🌙✨ I hope tonight brings you rest and tomorrow brings you joy. You are everything to me, and I made this app to prove it — even in a tiny, digital way. 💌",
+];
+
+const JOHN_TIPS = {
+  period: {
+    icon: '🥺',
+    text: '<strong>John says:</strong> You\'re in your period phase, baby 🌺 Please rest as much as you can. I\'d love to make you a hot water bottle and your favorite tea if I\'m there. Take it easy — you deserve it. 💕'
+  },
+  follicular: {
+    icon: '🌱',
+    text: '<strong>John says:</strong> You\'re in your follicular phase 🌱 Your energy is coming back! This is a great time to do things that make you happy. I\'m so glad you\'re feeling more yourself. 💖'
+  },
+  fertile: {
+    icon: '🌸',
+    text: '<strong>John says:</strong> You\'re in your fertile window 🌸 Your body is amazing — it\'s working so hard. You might feel extra radiant right now, and honestly… you always are to me. 😍'
+  },
+  ovulation: {
+    icon: '✨',
+    text: '<strong>John says:</strong> Today is your ovulation day ✨ You might feel at your most energetic and confident — and you should! You\'re doing wonderfully. I\'m so lucky to have you. 💕'
+  },
+  luteal: {
+    icon: '🌙',
+    text: '<strong>John says:</strong> You\'re in your luteal phase 🌙 PMS might start to creep in — please be gentle with yourself. If you feel moody or tired, that\'s completely normal. I\'ll always be patient with you. 🥺💌'
+  }
+};
+
+function setDailyLoveMsg() {
+  // Rotate by day of year so it changes daily but stays consistent that day
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now - start) / 864e5);
+  const msg = LOVE_MESSAGES[dayOfYear % LOVE_MESSAGES.length];
+  document.getElementById('daily-love-msg').textContent = msg;
+}
+
+function setJohnTip(phase) {
+  const tipBox  = document.getElementById('john-tip-box');
+  const tipIcon = document.getElementById('john-tip-icon');
+  const tipText = document.getElementById('john-tip-text');
+  if (!phase || !JOHN_TIPS[phase]) { tipBox.style.display = 'none'; return; }
+  const tip = JOHN_TIPS[phase];
+  tipIcon.textContent = tip.icon;
+  tipText.innerHTML   = tip.text;
+  tipBox.style.display = 'flex';
+}
+
+// ── HOME RENDER ──
 function renderHome() {
-  const cd=cycleData();
-  const cl=cd?cd.cl:S.cycleLen, pd=cd?cd.pd:S.periodDur;
-  document.getElementById('h-avg').textContent=cl;
-  document.getElementById('h-dur-sub').textContent=`${pd} day period`;
+  setDailyLoveMsg(); // FIX #3: rotate daily messages
 
-  const greetings=['Good morning ☀️','Hello, gorgeous 💕','Hey beautiful 🌸','Hi there, lovely 🌷'];
-  const g=greetings[new Date().getHours()%greetings.length];
-  document.getElementById('header-greeting').textContent=cd?`${g} — Day ${cd.dayN} of your cycle`:g;
+  const cd = cycleData();
+  const cl = cd ? cd.cl : S.cycleLen;
+  const pd = cd ? cd.pd : S.periodDur;
+  document.getElementById('h-avg').textContent = cl;
+  document.getElementById('h-dur-sub').textContent = `${pd} day period`;
 
-  if(!cd){
-    document.getElementById('h-day').textContent='—';
-    document.getElementById('h-next').textContent='—';
-    document.getElementById('h-phase-short').textContent='Log period';
-    document.getElementById('h-next-sub').textContent='No data yet';
-    document.getElementById('h-phase-badge').textContent='🌸 Log your first period to start';
-    document.getElementById('h-phase-badge').className='phase-badge phase-period';
-    ['p-next','p-ovu','p-fert','p-luteal'].forEach(i=>document.getElementById(i).textContent='—');
-    drawDonut(null); return;
+  const hr = new Date().getHours();
+  const greet = hr < 12 ? 'Good morning ☀️' : hr < 18 ? 'Good afternoon 🌸' : 'Good evening 🌙';
+  document.getElementById('header-greeting').textContent =
+    cd ? `${greet} — Day ${cd.dayN} of your cycle` : `${greet} 💕`;
+
+  if (!cd) {
+    document.getElementById('h-day').textContent = '—';
+    document.getElementById('h-next').textContent = '—';
+    document.getElementById('h-phase-short').textContent = 'Log period';
+    document.getElementById('h-next-sub').textContent = 'No data yet';
+    document.getElementById('h-phase-badge').textContent = '🌸 Log your first period to start';
+    document.getElementById('h-phase-badge').className = 'phase-badge phase-period';
+    setJohnTip(null);
+    ['p-next','p-ovu','p-fert','p-luteal'].forEach(i => document.getElementById(i).textContent = '—');
+    drawDonut(null);
+    return;
   }
 
-  document.getElementById('h-day').textContent=cd.dayN;
-  document.getElementById('h-next').textContent=Math.max(0,cd.daysLeft);
-  document.getElementById('h-next-sub').textContent=fmtF(iso(cd.nextP));
+  document.getElementById('h-day').textContent = cd.dayN;
+  document.getElementById('h-next').textContent = Math.max(0, cd.daysLeft);
+  document.getElementById('h-next-sub').textContent = fmtF(iso(cd.nextP));
 
-  const pn={'period':'🌺 Period Phase','follicular':'🌱 Follicular Phase','fertile':'🌸 Fertile Window','ovulation':'🥚 Ovulation Day','luteal':'🌙 Luteal Phase'};
-  const pc={'period':'phase-period','follicular':'phase-follicular','fertile':'phase-fertile','ovulation':'phase-ovulation','luteal':'phase-luteal'};
-  const badge=document.getElementById('h-phase-badge');
-  badge.textContent=pn[cd.phase]||cd.phase;
-  badge.className='phase-badge '+(pc[cd.phase]||'phase-follicular');
-  document.getElementById('h-phase-short').textContent=(pn[cd.phase]||cd.phase).replace(/^[^\s]+\s/,'');
+  const phaseNames = {
+    period:     '🌺 Period Phase',
+    follicular: '🌱 Follicular Phase',
+    fertile:    '🌸 Fertile Window',
+    ovulation:  '🥚 Ovulation Day',
+    luteal:     '🌙 Luteal Phase'
+  };
+  const phaseClasses = {
+    period:     'phase-period',
+    follicular: 'phase-follicular',
+    fertile:    'phase-fertile',
+    ovulation:  'phase-ovulation',
+    luteal:     'phase-luteal'
+  };
+  const badge = document.getElementById('h-phase-badge');
+  badge.textContent = phaseNames[cd.phase] || cd.phase;
+  badge.className = 'phase-badge ' + (phaseClasses[cd.phase] || 'phase-follicular');
+  document.getElementById('h-phase-short').textContent = (phaseNames[cd.phase] || cd.phase).replace(/^[^\s]+\s/, '');
 
-  document.getElementById('p-next').textContent=fmtS(iso(cd.nextP));
-  document.getElementById('p-ovu').textContent=fmtS(iso(cd.ovuDay));
-  document.getElementById('p-fert').textContent=`${fmtS(iso(cd.fertS))}–${fmtS(iso(cd.fertE))}`;
-  const lS=addDays(cd.ovuDay,1);
-  document.getElementById('p-luteal').textContent=`${fmtS(iso(lS))}–${fmtS(iso(cd.nextP))}`;
+  setJohnTip(cd.phase); // FIX #2: show phase-appropriate tip
+
+  document.getElementById('p-next').textContent   = fmtS(iso(cd.nextP));
+  document.getElementById('p-ovu').textContent    = fmtS(iso(cd.ovuDay));
+  document.getElementById('p-fert').textContent   = `${fmtS(iso(cd.fertS))}–${fmtS(iso(cd.fertE))}`;
+  const lS = addDays(cd.ovuDay, 1);
+  document.getElementById('p-luteal').textContent = `${fmtS(iso(lS))}–${fmtS(iso(cd.nextP))}`;
   drawDonut(cd);
 }
 
-// ───────────────────────────────────────
-// DONUT CANVAS
-// ───────────────────────────────────────
+// ── DONUT CANVAS ──
 function drawDonut(cd) {
-  const canvas=document.getElementById('donut');
-  const ctx=canvas.getContext('2d');
-  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,RO=110,RI=68;
-  ctx.clearRect(0,0,W,H);
-  const cl=cd?cd.cl:28, pd=cd?cd.pd:5, ovD=cl-14;
-  const segs=[
-    {start:0,len:pd,color:'#F4628F',label:'Period'},
-    {start:pd,len:ovD-pd-5,color:'#7EC8E3',label:'Follicular'},
-    {start:ovD-5,len:7,color:'#6BBFA3',label:'Fertile'},
-    {start:ovD,len:1,color:'#F0BC5E',label:'Ovulation'},
-    {start:ovD+1,len:cl-ovD-1,color:'#C27BE0',label:'Luteal'},
+  const canvas = document.getElementById('donut');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, RO = 110, RI = 68;
+  ctx.clearRect(0, 0, W, H);
+  const cl = cd ? cd.cl : 28, pd = cd ? cd.pd : 5, ovD = cd ? cd.ovD : 14;
+  const segs = [
+    { start: 0,      len: pd,          color: '#F4628F', label: 'Period' },
+    { start: pd,     len: ovD-pd-5,    color: '#7EC8E3', label: 'Follicular' },
+    { start: ovD-5,  len: 6,           color: '#6BBFA3', label: 'Fertile' },
+    { start: ovD,    len: 1,           color: '#F0BC5E', label: 'Ovulation' },
+    { start: ovD+1,  len: cl-ovD-1,   color: '#C27BE0', label: 'Luteal' },
   ];
-  segs.forEach(seg=>{
-    if(seg.len<=0) return;
-    const a1=(seg.start/cl)*Math.PI*2-Math.PI/2;
-    const a2=((seg.start+seg.len)/cl)*Math.PI*2-Math.PI/2;
+  segs.forEach(seg => {
+    if (seg.len <= 0) return;
+    const a1 = (seg.start / cl) * Math.PI * 2 - Math.PI / 2;
+    const a2 = ((seg.start + seg.len) / cl) * Math.PI * 2 - Math.PI / 2;
     ctx.beginPath();
-    ctx.arc(cx,cy,RO,a1,a2);
-    ctx.arc(cx,cy,RI,a2,a1,true);
+    ctx.arc(cx, cy, RO, a1, a2);
+    ctx.arc(cx, cy, RI, a2, a1, true);
     ctx.closePath();
-    ctx.fillStyle=seg.color+'55';
+    ctx.fillStyle = seg.color + '55';
     ctx.fill();
-    ctx.strokeStyle=seg.color;
-    ctx.lineWidth=2.5;
+    ctx.strokeStyle = seg.color;
+    ctx.lineWidth = 2.5;
     ctx.stroke();
   });
-  // center
-  ctx.beginPath(); ctx.arc(cx,cy,RI-2,0,Math.PI*2);
-  const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,RI);
-  grad.addColorStop(0,'#FFF7FA'); grad.addColorStop(1,'#FDE8EF');
-  ctx.fillStyle=grad; ctx.fill();
-  // today dot
-  if(cd){
-    const ang=((cd.dayN-1)/cl)*Math.PI*2-Math.PI/2;
-    const tr=RO+10, tx=cx+tr*Math.cos(ang), ty=cy+tr*Math.sin(ang);
-    ctx.beginPath(); ctx.arc(tx,ty,7,0,Math.PI*2);
-    ctx.fillStyle='#F4628F'; ctx.fill();
-    ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, RI-2, 0, Math.PI*2);
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, RI);
+  grad.addColorStop(0, '#FFF7FA'); grad.addColorStop(1, '#FDE8EF');
+  ctx.fillStyle = grad; ctx.fill();
+  if (cd) {
+    const ang = ((cd.dayN - 1) / cl) * Math.PI * 2 - Math.PI / 2;
+    const tr = RO + 10, tx = cx + tr * Math.cos(ang), ty = cy + tr * Math.sin(ang);
+    ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI*2);
+    ctx.fillStyle = '#F4628F'; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5; ctx.stroke();
   }
-  // text
-  ctx.textAlign='center';
-  ctx.fillStyle='#2D1B2E';
-  ctx.font='700 15px Nunito, sans-serif';
-  ctx.fillText(cd?`Day ${cd.dayN}`:'Start here',cx,cy-4);
-  ctx.fillStyle='#B08898';
-  ctx.font='600 11px Nunito, sans-serif';
-  ctx.fillText(cd?`${cl}-day cycle`:'Log a period',cx,cy+14);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#2D1B2E';
+  ctx.font = '700 15px Nunito, sans-serif';
+  ctx.fillText(cd ? `Day ${cd.dayN}` : 'Start here', cx, cy - 4);
+  ctx.fillStyle = '#B08898';
+  ctx.font = '600 11px Nunito, sans-serif';
+  ctx.fillText(cd ? `${cl}-day cycle` : 'Log a period', cx, cy + 14);
 }
 
-// ───────────────────────────────────────
-// LOG FORM
-// ───────────────────────────────────────
-let selFlow=null, selMood=null;
-function tFlow(el){ document.querySelectorAll('.flow-btn').forEach(b=>b.classList.remove('on')); el.classList.add('on'); selFlow=el.dataset.f; }
-function tMood(el){ document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('on')); el.classList.add('on'); selMood=el.dataset.m; }
-function clearLog(){
-  document.getElementById('l-start').value='';
-  document.getElementById('l-end').value='';
-  document.getElementById('l-notes').value='';
-  document.querySelectorAll('.flow-btn,.mood-btn,.chip').forEach(e=>e.classList.remove('on'));
-  selFlow=null; selMood=null;
+// ── LOG FORM ──
+let selFlow = null, selMood = null;
+function tFlow(el) {
+  document.querySelectorAll('.flow-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on'); selFlow = el.dataset.f;
 }
-function saveLog(){
-  const start=document.getElementById('l-start').value;
-  if(!start){ toast('⚠️ Please select a start date'); return; }
-  const syms=[...document.querySelectorAll('#symp-chips .chip.on')].map(c=>c.textContent);
-  S.logs.push({id:Date.now(),start,end:document.getElementById('l-end').value||null,flow:selFlow,mood:selMood,symptoms:syms,notes:document.getElementById('l-notes').value,at:today()});
+function tMood(el) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on'); selMood = el.dataset.m;
+}
+function clearLog() {
+  document.getElementById('l-start').value = today();
+  document.getElementById('l-end').value = '';
+  document.getElementById('l-notes').value = '';
+  document.querySelectorAll('.flow-btn,.mood-btn,.chip').forEach(e => e.classList.remove('on'));
+  selFlow = null; selMood = null;
+}
+function saveLog() {
+  const start = document.getElementById('l-start').value;
+  if (!start) { toast('⚠️ Please select a start date'); return; }
+  const endVal = document.getElementById('l-end').value;
+  if (endVal && endVal < start) { toast('⚠️ End date must be after start date'); return; }
+  const syms = [...document.querySelectorAll('#symp-chips .chip.on')].map(c => c.textContent);
+  S.logs.push({
+    id: Date.now(),
+    start,
+    end: endVal || null,
+    flow: selFlow,
+    mood: selMood,
+    symptoms: syms,
+    notes: document.getElementById('l-notes').value,
+    at: today()
+  });
   save(); clearLog(); renderHome();
   toast('🌸 Period logged! You\'re amazing 💕');
 }
-function saveSettings(){
-  const cl=parseInt(document.getElementById('s-cycle').value);
-  const pd=parseInt(document.getElementById('s-dur').value);
-  if(cl>=21&&cl<=40) S.cycleLen=cl;
-  if(pd>=2&&pd<=10) S.periodDur=pd;
+function saveSettings() {
+  const cl = parseInt(document.getElementById('s-cycle').value);
+  const pd = parseInt(document.getElementById('s-dur').value);
+  if (cl >= 21 && cl <= 40) S.cycleLen = cl;
+  if (pd >= 2  && pd <= 10) S.periodDur = pd;
   save(); renderHome();
   toast('✓ Settings saved!');
 }
 
-// ───────────────────────────────────────
-// CALENDAR
-// ───────────────────────────────────────
-let calY=new Date().getFullYear(), calM=new Date().getMonth();
-function chMonth(d){ calM+=d; if(calM>11){calM=0;calY++;}else if(calM<0){calM=11;calY--;} renderCal(); }
-function dayClass(ds){
-  const cd=cycleData();
-  const loggedDs=new Set();
-  S.logs.forEach(l=>{
-    if(l.start) loggedDs.add(l.start);
-    if(l.end){ let d=new Date(l.start); while(iso(d)<=l.end){loggedDs.add(iso(d));d=addDays(d,1);} }
-  });
-  if(loggedDs.has(ds)) return ['period','logged'];
-  const cls=[];
-  const checkCycle=(startStr,i)=>{
-    if(!startStr) return false;
-    const dn=diff(startStr,ds)+1;
-    const cl=cd.cl, pd=cd.pd, ovD=cl-14;
-    if(dn<1||dn>cl) return false;
-    if(dn<=pd) cls.push('period');
-    else if(dn<ovD-5) cls.push('follicular');
-    else if(dn>=ovD-5&&dn<ovD) cls.push('fertile');
-    else if(dn===ovD) cls.push('ovulation');
-    else cls.push('luteal');
-    return true;
-  };
-  if(cd){
-    if(!checkCycle(cd.last.start)){
-      for(let c=1;c<=6;c++){
-        if(checkCycle(iso(addDays(new Date(cd.last.start),cd.cl*c)))) break;
-        if(checkCycle(iso(addDays(new Date(cd.last.start),-cd.cl*c)))) break;
-      }
+// ── FIX #4: SETTINGS TOGGLE PERSISTENCE ──
+function loadToggles() {
+  document.getElementById('p-notif').checked    = S.prefs.notif   !== false;
+  document.getElementById('p-symp').checked     = S.prefs.symp    !== false;
+  document.getElementById('p-fert-tog').checked = S.prefs.fertTog !== false;
+}
+function saveToggles() {
+  S.prefs.notif   = document.getElementById('p-notif').checked;
+  S.prefs.symp    = document.getElementById('p-symp').checked;
+  S.prefs.fertTog = document.getElementById('p-fert-tog').checked;
+  save();
+  toast('✓ Preferences saved!');
+}
+
+// ── FIX #6: CALENDAR — fixed dayClass scoping ──
+let calY = new Date().getFullYear(), calM = new Date().getMonth();
+function chMonth(d) {
+  calM += d;
+  if (calM > 11) { calM = 0; calY++; }
+  else if (calM < 0) { calM = 11; calY--; }
+  renderCal();
+}
+
+function getPhaseForDate(ds, cd) {
+  // Returns phase class string for a given date string given cycle data
+  if (!cd) return [];
+  const cl = cd.cl, pd = cd.pd, ovD = cd.ovD;
+  const showFert = S.prefs.fertTog !== false;
+
+  // Find the nearest cycle start before or on this date
+  // Try current cycle and up to 12 previous/future cycles
+  for (let offset = -12; offset <= 12; offset++) {
+    const cycleStart = iso(addDays(new Date(cd.last.start), cl * offset));
+    const dn = diff(cycleStart, ds) + 1;
+    if (dn >= 1 && dn <= cl) {
+      if (dn <= pd)                          return ['period'];
+      if (dn === ovD)                        return ['ovulation'];
+      if (showFert && dn >= ovD-5 && dn < ovD) return ['fertile'];
+      if (dn > ovD)                          return ['luteal'];
+      return ['follicular'];
     }
   }
-  if(S.logs.some(l=>l.start===ds)) cls.push('logged');
-  return [...new Set(cls)];
+  return [];
 }
-function renderCal(){
-  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('cal-title').textContent=`${MONTHS[calM]} ${calY}`;
-  const g=document.getElementById('cal-grid'); g.innerHTML='';
-  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{ const e=document.createElement('div'); e.className='cal-dn'; e.textContent=d; g.appendChild(e); });
-  const fd=new Date(calY,calM,1).getDay();
-  const dim=new Date(calY,calM+1,0).getDate();
-  const td=today();
-  for(let i=0;i<fd;i++){ const e=document.createElement('div'); e.className='cal-d emp'; g.appendChild(e); }
-  for(let d=1;d<=dim;d++){
-    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const e=document.createElement('div');
-    e.className='cal-d '+dayClass(ds).join(' ');
-    if(ds===td) e.classList.add('td');
-    e.textContent=d;
+
+function dayClass(ds) {
+  const cd = cycleData();
+
+  // Check if this date is within any *logged* period range
+  const loggedDays = new Set();
+  S.logs.forEach(l => {
+    if (!l.start) return;
+    const endDate = l.end || l.start;
+    let cur = new Date(l.start + 'T12:00:00');
+    const end = new Date(endDate + 'T12:00:00');
+    while (iso(cur) <= iso(end)) {
+      loggedDays.add(iso(cur));
+      cur = addDays(cur, 1);
+    }
+  });
+
+  const classes = [];
+  if (loggedDays.has(ds)) {
+    classes.push('period', 'logged');
+    return classes;
+  }
+  if (S.logs.some(l => l.start === ds || l.end === ds)) {
+    classes.push('logged');
+  }
+
+  // Add predicted phase classes
+  const phaseClasses = getPhaseForDate(ds, cd);
+  classes.push(...phaseClasses);
+  return [...new Set(classes)];
+}
+
+function renderCal() {
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-title').textContent = `${MONTHS[calM]} ${calY}`;
+  const g = document.getElementById('cal-grid');
+  g.innerHTML = '';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
+    const e = document.createElement('div');
+    e.className = 'cal-dn'; e.textContent = d; g.appendChild(e);
+  });
+  const fd = new Date(calY, calM, 1).getDay();
+  const dim = new Date(calY, calM + 1, 0).getDate();
+  const td = today();
+  for (let i = 0; i < fd; i++) {
+    const e = document.createElement('div'); e.className = 'cal-d emp'; g.appendChild(e);
+  }
+  for (let d = 1; d <= dim; d++) {
+    const ds = `${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const e = document.createElement('div');
+    const classes = dayClass(ds);
+    e.className = 'cal-d ' + classes.join(' ');
+    if (ds === td) e.classList.add('td');
+    e.textContent = d;
     g.appendChild(e);
   }
 }
 
-// ───────────────────────────────────────
-// HISTORY
-// ───────────────────────────────────────
-function renderHist(){
-  const el=document.getElementById('hist-list');
-  const sorted=S.logs.slice().sort((a,b)=>new Date(b.start)-new Date(a.start));
-  if(!sorted.length){
-    el.innerHTML=`<div class="hist-empty"><span class="big">🌸</span><p>No entries yet.<br>Start by logging your first period!</p></div>`;
+// ── HISTORY ──
+function renderHist() {
+  const el = document.getElementById('hist-list');
+  const sorted = S.logs.slice().sort((a, b) => new Date(b.start) - new Date(a.start));
+  if (!sorted.length) {
+    el.innerHTML = `<div class="hist-empty"><span class="big">🌸</span><p>No entries yet.<br>Start by logging your first period!</p></div>`;
     return;
   }
-  el.innerHTML=sorted.map(l=>`
+  el.innerHTML = sorted.map(l => `
     <div class="hist-item" id="hi-${l.id}">
       <div class="hist-date-col">
         <div class="hist-date-main">${fmtS(l.start)}</div>
-        ${l.end?`<div class="hist-date-end">– ${fmtS(l.end)}</div>`:''}
+        ${l.end ? `<div class="hist-date-end">– ${fmtS(l.end)}</div>` : ''}
       </div>
       <div class="hist-chips">
-        ${l.flow?`<span class="hist-chip">Flow ${['','Light','Medium','Heavy','V.Heavy'][l.flow]}</span>`:''}
-        ${l.mood?`<span class="hist-chip">${l.mood}</span>`:''}
-        ${l.symptoms.map(s=>`<span class="hist-chip">${s}</span>`).join('')}
-        ${l.notes?`<span class="hist-chip">📝</span>`:''}
+        ${l.flow ? `<span class="hist-chip">Flow ${['','Light','Medium','Heavy','V.Heavy'][l.flow]}</span>` : ''}
+        ${l.mood ? `<span class="hist-chip">${l.mood}</span>` : ''}
+        ${l.symptoms.map(s => `<span class="hist-chip">${s}</span>`).join('')}
+        ${l.notes ? `<span class="hist-chip">📝</span>` : ''}
       </div>
       <button class="hist-del" onclick="delLog(${l.id})">✕</button>
     </div>`).join('');
 }
-function delLog(id){ S.logs=S.logs.filter(l=>l.id!==id); save(); renderHist(); renderHome(); toast('Entry deleted'); }
-function wipeData(){ if(confirm('Delete ALL your Flora data? This cannot be undone.♻️')){ S.logs=[]; save(); renderHist(); renderHome(); toast('All data cleared'); } }
+function delLog(id) {
+  S.logs = S.logs.filter(l => l.id !== id);
+  save(); renderHist(); renderHome();
+  toast('Entry deleted');
+}
+function wipeData() {
+  if (confirm('Delete ALL your Flora data? This cannot be undone.')) {
+    S.logs = [];
+    save(); renderHist(); renderHome();
+    toast('All data cleared');
+  }
+}
 
-// ───────────────────────────────────────
-// MARKDOWN → HTML PARSER
-// ───────────────────────────────────────
+// ── MARKDOWN → HTML ──
 function md2html(text) {
-  // Escape HTML first
   let t = text
     .replace(/&/g,'&amp;')
     .replace(/</g,'&lt;')
     .replace(/>/g,'&gt;');
-
-  // Headers
   t = t.replace(/^### (.+)$/gm, '<h4>$1</h4>');
   t = t.replace(/^## (.+)$/gm,  '<h3>$1</h3>');
   t = t.replace(/^# (.+)$/gm,   '<h3>$1</h3>');
-
-  // Bold & italic
   t = t.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
   t = t.replace(/\*\*(.+?)\*\*/g,     '<strong>$1</strong>');
   t = t.replace(/\*(.+?)\*/g,         '<em>$1</em>');
   t = t.replace(/__(.+?)__/g,         '<strong>$1</strong>');
   t = t.replace(/_(.+?)_/g,           '<em>$1</em>');
-
-  // Horizontal rule
   t = t.replace(/^---+$/gm, '<hr>');
-
-  // Unordered lists — group consecutive <li> lines
   t = t.replace(/^[\*\-•] (.+)$/gm, '<li>$1</li>');
   t = t.replace(/(<li>[^\n]*<\/li>\n?)+/g, match => `<ul>${match}</ul>`);
-
-  // Ordered lists
   t = t.replace(/^\d+\. (.+)$/gm, '<oli>$1</oli>');
   t = t.replace(/(<oli>[^\n]*<\/oli>\n?)+/g, match => `<ol>${match.replace(/<\/?oli>/g, m => m.replace('oli','li'))}</ol>`);
-
-  // Emoji section headers (lines starting with emoji + text, no #)
-  t = t.replace(/^([\u{1F300}-\u{1FAFF}\u{2600}-\u{27FF}][\uFE0F]?\s.+)$/gmu, '<div class="ai-section">$1</div>');
-
-  // Paragraphs — wrap lines not already in block elements
   const lines = t.split('\n');
   const blocked = ['<h3>','<h4>','<ul>','</ul>','<ol>','</ol>','<li>','</li>','<hr>','<div','</div'];
   const out = [];
@@ -1082,12 +1300,12 @@ function md2html(text) {
   lines.forEach(line => {
     const trimmed = line.trim();
     if (!trimmed) {
-      if (buf) { out.push(`<p>${buf}</p>`); buf=''; }
+      if (buf) { out.push(`<p>${buf}</p>`); buf = ''; }
       return;
     }
     const isBlock = blocked.some(b => trimmed.startsWith(b));
     if (isBlock) {
-      if (buf) { out.push(`<p>${buf}</p>`); buf=''; }
+      if (buf) { out.push(`<p>${buf}</p>`); buf = ''; }
       out.push(trimmed);
     } else {
       buf = buf ? buf + ' ' + trimmed : trimmed;
@@ -1097,77 +1315,75 @@ function md2html(text) {
   return out.join('\n');
 }
 
-// ───────────────────────────────────────
-// AI
-// ───────────────────────────────────────
-function qAsk(q){ document.getElementById('ai-q').value=q; sendAI(); }
-async function sendAI(){
-  const inp=document.getElementById('ai-q');
-  const q=inp.value.trim(); if(!q) return;
-  inp.value='';
-  const btn=document.getElementById('ai-btn');
-  const box=document.getElementById('ai-box');
-  btn.disabled=true; btn.textContent='…💭';
-  box.innerHTML='<div class="ai-bubble-tag">🌸 Flora AI</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+// ── FIX #5: AI — switched to Anthropic API ──
+function qAsk(q) { document.getElementById('ai-q').value = q; sendAI(); }
 
-  const cd=cycleData();
-  const ctx=[
+async function sendAI() {
+  const inp = document.getElementById('ai-q');
+  const q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  const btn = document.getElementById('ai-btn');
+  const box = document.getElementById('ai-box');
+  btn.disabled = true; btn.textContent = '…💭';
+  box.innerHTML = '<div class="ai-bubble-tag">🌸 Flora AI</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+
+  const cd = cycleData();
+  const inclSymptoms = S.prefs.symp !== false;
+  const ctx = [
     `Today: ${today()}`,
-    cd?`Cycle day: ${cd.dayN} of ${cd.cl}`:'No cycle data yet.',
-    cd?`Phase: ${cd.phase}`:'',
-    cd?`Days to next period: ${Math.max(0,cd.daysLeft)}`:'',
-    cd?`Avg cycle length: ${cd.cl} days, period duration: ${cd.pd} days`:'',
-    cd?`Next period: ${fmtF(iso(cd.nextP))}`:'',
-    cd?`Ovulation: ${fmtF(iso(cd.ovuDay))}`:'',
-    S.logs.length?`Total logged cycles: ${S.logs.length}`:'',
-    ...S.logs.slice().sort((a,b)=>new Date(b.start)-new Date(a.start)).slice(0,3).map(l=>`Recent log ${l.start}: flow=${l.flow||'?'}, mood=${l.mood||'?'}, symptoms=${l.symptoms.join(',')||'none'}`)
+    cd ? `Cycle day: ${cd.dayN} of ${cd.cl}` : 'No cycle data yet.',
+    cd ? `Current phase: ${cd.phase}` : '',
+    cd ? `Days until next period: ${Math.max(0, cd.daysLeft)}` : '',
+    cd ? `Average cycle length: ${cd.cl} days, period duration: ${cd.pd} days` : '',
+    cd ? `Next period predicted: ${fmtF(iso(cd.nextP))}` : '',
+    cd ? `Ovulation predicted: ${fmtF(iso(cd.ovuDay))}` : '',
+    S.logs.length ? `Total logged periods: ${S.logs.length}` : '',
+    ...(inclSymptoms
+      ? S.logs.slice().sort((a,b) => new Date(b.start)-new Date(a.start)).slice(0,3)
+          .map(l => `Log ${l.start}: flow=${l.flow||'?'}, mood=${l.mood||'?'}, symptoms=${l.symptoms.join(',')||'none'}`)
+      : [])
   ].filter(Boolean).join('\n');
 
   try {
-    const res=await fetch('https://text.pollinations.ai/',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'openai',
-        messages:[
-          {role:'system',content:`You are Flora, a warm, knowledgeable, and supportive menstrual health AI assistant. You are friendly, empathetic, and speak to women with care and positivity. Use a conversational yet informative tone. Format your responses with clear sections, bullet points where helpful, and bold key terms. Use relevant emojis tastefully to make responses feel approachable — but not excessively. Keep responses focused and practical (200-350 words). Always end with an encouraging note. You are NOT a medical replacement — recommend consulting a doctor for serious concerns.`},
-          {role:'user',content:`MY CYCLE DATA:\n${ctx}\n\nQUESTION: ${q}`}
-        ],
-        seed:Math.floor(Math.random()*9999)
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are Flora, a warm, knowledgeable, and supportive menstrual health AI assistant created by John as a loving gift for his partner. You are friendly, empathetic, and speak with genuine warmth and care. Use a conversational yet informative tone. Format responses with clear sections, bullet points where helpful, and bold key terms. Use relevant emojis tastefully. Keep responses focused and practical (200-350 words). Always end with an encouraging note. You are NOT a medical replacement — recommend consulting a doctor for serious concerns. The woman using this app is deeply loved by John.`,
+        messages: [
+          {
+            role: 'user',
+            content: `MY CYCLE DATA:\n${ctx}\n\nQUESTION: ${q}`
+          }
+        ]
       })
     });
-    if(!res.ok) throw new Error(`Server returned ${res.status}`);
-    // Pollinations may return plain text or JSON — handle both
-    const raw = await res.text();
-    let reply = raw.trim();
-    // Strip BOM if present
-    if (reply.charCodeAt(0) === 0xFEFF) reply = reply.slice(1);
-    // Try to parse as JSON (OpenAI format)
-    try {
-      const json = JSON.parse(reply);
-      if (json.choices && json.choices[0]) {
-        reply = json.choices[0].message?.content || json.choices[0].text || reply;
-      } else if (json.content) {
-        reply = Array.isArray(json.content)
-          ? json.content.filter(b=>b.type==='text').map(b=>b.text).join('\n')
-          : json.content;
-      }
-    } catch(_) { /* plain text — use as-is */ }
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      throw new Error(`API error ${res.status}: ${errBody.slice(0,120)}`);
+    }
+    const data = await res.json();
+    // Extract text from Anthropic response format
+    const reply = data.content
+      ? data.content.filter(b => b.type === 'text').map(b => b.text).join('\n')
+      : '';
     if (!reply) throw new Error('Empty response from AI');
-    box.innerHTML='<div class="ai-bubble-tag">🌸 Flora AI</div>'+md2html(reply);
+    box.innerHTML = '<div class="ai-bubble-tag">🌸 Flora AI</div>' + md2html(reply);
   } catch(e) {
-    box.innerHTML=`<div class="ai-bubble-tag">🌸 Flora AI</div><p style="color:var(--pink)">⚠️ Couldn't reach Flora AI right now. Please check your internet connection and try again.</p><p style="color:var(--text-soft);font-size:.78rem">Details: ${e.message}</p>`;
+    box.innerHTML = `<div class="ai-bubble-tag">🌸 Flora AI</div><p style="color:var(--pink)">⚠️ Couldn't reach Flora AI right now. Please check your internet connection and try again.</p><p style="color:var(--text-soft);font-size:.78rem;margin-top:8px">Details: ${e.message}</p>`;
   } finally {
-    btn.disabled=false; btn.textContent='Send 💌';
+    btn.disabled = false; btn.textContent = 'Send 💌';
   }
 }
 
-// ───────────────────────────────────────
-// INIT
-// ───────────────────────────────────────
-document.getElementById('l-start').value=today();
-document.getElementById('s-cycle').value=S.cycleLen;
-document.getElementById('s-dur').value=S.periodDur;
+// ── INIT ──
+document.getElementById('l-start').value = today();
+document.getElementById('s-cycle').value = S.cycleLen;
+document.getElementById('s-dur').value   = S.periodDur;
+loadToggles();
 renderHome();
 renderCal();
 </script>
