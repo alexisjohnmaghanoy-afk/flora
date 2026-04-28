@@ -7,7 +7,6 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     />
     <title>Flora — Cycle Tracker</title>
-    <script defer src="/_vercel/insights/script.js"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap"
       rel="stylesheet"
@@ -1889,7 +1888,7 @@
             tracker. All predictions use your personal data for maximum
             accuracy.<br /><br />
             AI insights are powered by
-            <strong style="color: var(--pink)">Claude AI</strong> — intelligent,
+            <strong style="color: var(--pink)">Pollinations AI</strong> — intelligent,
             warm, and always here for you.<br /><br />
             <em
               >⚠️ Flora is not a medical device. Always consult your doctor for
@@ -2593,6 +2592,7 @@
         const inp = document.getElementById("ai-q");
         const q = inp.value.trim();
         if (!q) return;
+
         inp.value = "";
         const btn = document.getElementById("ai-btn");
         const box = document.getElementById("ai-box");
@@ -2629,36 +2629,30 @@
           .join("\n");
 
         try {
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
+          const res = await fetch("https://text.pollinations.ai/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              model: "claude-sonnet-4-20250514",
-              max_tokens: 1000,
-              system: `You are Flora, a warm, knowledgeable, and supportive menstrual health AI assistant created by John as a loving gift for his partner. You are friendly, empathetic, and speak with genuine warmth and care. Use a conversational yet informative tone. Format responses with clear sections, bullet points where helpful, and bold key terms. Use relevant emojis tastefully. Keep responses focused and practical (200-350 words). Always end with an encouraging note. You are NOT a medical replacement — recommend consulting a doctor for serious concerns. The woman using this app is deeply loved by John.`,
               messages: [
+                {
+                  role: "system",
+                  content: `You are Flora, a warm, knowledgeable, and supportive menstrual health AI assistant created by John as a loving gift for his partner. You are friendly, empathetic, and speak with genuine warmth and care. Use a conversational yet informative tone. Format responses with clear sections, bullet points where helpful, and bold key terms. Use relevant emojis tastefully. Keep responses focused and practical (200-350 words). Always end with an encouraging note. You are NOT a medical replacement — recommend consulting a doctor for serious concerns. The woman using this app is deeply loved by John.`,
+                },
                 {
                   role: "user",
                   content: `MY CYCLE DATA:\n${ctx}\n\nQUESTION: ${q}`,
                 },
               ],
+              model: "openai", // Pollinations defaults to high-quality models
+              jsonMode: false,
             }),
           });
-          if (!res.ok) {
-            const errBody = await res.text().catch(() => "");
-            throw new Error(
-              `API error ${res.status}: ${errBody.slice(0, 120)}`,
-            );
-          }
-          const data = await res.json();
-          // Extract text from Anthropic response format
-          const reply = data.content
-            ? data.content
-                .filter((b) => b.type === "text")
-                .map((b) => b.text)
-                .join("\n")
-            : "";
+
+          if (!res.ok) throw new Error(`API error ${res.status}`);
+
+          const reply = await res.text();
           if (!reply) throw new Error("Empty response from AI");
+
           box.innerHTML =
             '<div class="ai-bubble-tag">🌸 Flora AI</div>' + md2html(reply);
         } catch (e) {
